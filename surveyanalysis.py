@@ -592,6 +592,7 @@ def surveycontroller(file):
 	fig = plt.figure()
 	number = 330
 
+	#  Loop over school list
 	for entry in schoollist:
 
 		schoolData = surveysortschool(classDataList,entry)
