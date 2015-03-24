@@ -33,3 +33,8 @@ mv /Users/elizabeth/Documents/Analysis/pinglogs/IBL_Thurs_9_50_11-21-2014_0.52 /
 temp=$(find /Users/elizabeth/Documents/Analysis/pinglogs/* | sed 's/^/"/g' | sed 's/$/"/g' | tr '\n' ',')
 temp2=$(echo "$temp" | rev | cut -c 2- | rev)
 echo 'pingfiles = ['$temp2']' > pingfilelist.py
+
+#  Pipe blackbox files to a list for use in the main program
+temp=$(find /Users/elizabeth/Documents/Analysis/pinglogs/testbox/* | sed 's/^/"/g' | sed 's/$/"/g' | tr '\n' ',')
+temp2=$(echo "$temp" | rev | cut -c 2- | rev)
+echo 'pingfiles = ['$temp2']' > testboxfilelist.py
