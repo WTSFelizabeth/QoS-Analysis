@@ -83,6 +83,3 @@ class BlackboxData:
 		self.pingtimes = pingtimes
 		self.jitters = jitters
 		self.losses = losses
-
-		#  Increment count.
-		PingData.logcount += 1
