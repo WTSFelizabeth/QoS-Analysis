@@ -19,10 +19,12 @@ from surveyanalysis import *
 from sessionanalysis import *
 
 from pingfilelist import *
+from testboxfilelist import *
 
 
 #import all the ping data (required:  list of files)
 pinglist = pingimport(pingfiles)
+blackboxpinglist = blackboximport(blackboxpingfiles)
 
 #import the surveys
 classsurveylist = surveycontroller('surveys.txt')

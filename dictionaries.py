@@ -41,10 +41,10 @@ classenrollment = {'Castlemont Tue 9:40':5,'Castemont Tue 11:50':2,'Columbia':8,
 
 # Find day of week based on the class.
 classtoday = {'Cabrillo':'Mon','Castlemont Tue 9:40':'Tue','Castlemont Tue 11:50':'Tue','Columbia':'Wed','IBL_Thurs 9:50':'Thu',
-'IBL_Thurs 10:40':'Thu','IBL_Thurs 11:30','Thu','IBL_Thurs 2:20':'Thu','Horn':'Mon','Irving High Thurs 1':'Thu', 'Irving High Thurs 9':'Thu',
+'IBL_Thurs 10:40':'Thu','IBL_Thurs 11:30':'Thu','IBL_Thurs 2:20':'Thu','Horn':'Mon','Irving High Thurs 1':'Thu', 'Irving High Thurs 9':'Thu',
 'Irving High Thurs 3':'Thu','Morrill':'Tue','Nimitz Wed 12':'Wed', 'Nimitz Wed 10':'Wed', 'Nimitz Wed 3':'Wed', 'Overfelt':'Thu', 
-'Piedmont':'Tue', 'RL Turner Tue 8','Tue','RL Turner Tue 1':'Tue','Sierramont Tue 10':'Tue', 'Sierramont Tue 12','Tue','SLHS Thurs 12':'Thu',
-'SLHS Thurs 1':'Thu', 'SLHS Thurs 2','Thu','Testing':'Mon'}
+'Piedmont':'Tue', 'RL Turner Tue 8':'Tue','RL Turner Tue 1':'Tue','Sierramont Tue 10':'Tue', 'Sierramont Tue 12':'Tue','SLHS Thurs 12':'Thu',
+'SLHS Thurs 1':'Thu', 'SLHS Thurs 2':'Thu','Testing':'Mon'}
 
 #  Find session start and end time based on class.
 

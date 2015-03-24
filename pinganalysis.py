@@ -172,3 +172,9 @@ def pingimport(filelist):
 
 	#  Return the list of PingData objects to main.py
 	return pingdatalist
+
+def blackboximport(filelist):
+
+	testreturn = list()
+
+	return testreturn
