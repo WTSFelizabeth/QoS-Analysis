@@ -11,7 +11,7 @@ import matplotlib as mpl
 import csv
 import datetime as dt
 
-from dictionaries import months, numtodays, classtoday
+from dictionaries import months, numtodays, classtoday, locationtostart, locationtoend
 from pingdata import PingData, BlackboxData
 
 
@@ -283,6 +283,28 @@ def blackboximport(filelist):
 
 	return blackboxdatalist
 
+def pullsessiondata(data,location):
+
+	starttime = locationtostart[location]
+	endtime = locationtoend[location]
+
+	print starttime
+	print endtime
+
+	test = 'test'
+
+	return test
+
 def blackboxanalyze(datalist):
+
+	#  Loop over the full list of data.
+	for item in datalist:
+		#  If the data include a session, push to pullsessiondata to pull out a session data list.
+		count = 0
+		for flag in item.session:
+			if flag == True:
+				location = item.location[0]
+				test = pullsessiondata(item,location)
+		count += 1
 
 	return

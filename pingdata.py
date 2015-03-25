@@ -78,6 +78,7 @@ class BlackboxData:
 
 		#  Link data to the object.
 		self.location = location
+		self.dayofweek = dayofweek
 		self.date = date
 		self.times = times
 		self.pingtimes = pingtimes

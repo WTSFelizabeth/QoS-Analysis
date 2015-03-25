@@ -25,6 +25,7 @@ from testboxfilelist import *
 #import all the ping data (required:  list of files)
 pinglist = pingimport(pingfiles)
 blackboxpinglist = blackboximport(blackboxpingfiles)
+blackboxanalyze(blackboxpinglist)
 
 #import the surveys
 classsurveylist = surveycontroller('surveys.txt')
