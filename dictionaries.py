@@ -4,6 +4,12 @@
 #  Months of the year converted to numerical form.
 months = {'Jan':1,'Feb':2,'Mar':3,'Apr':4,'May':5,'Jun':6,'Jul':7,'Aug':8,'Sep':9,'Oct':10,'Nov':11,'Dec':12}
 
+#  Days of week converted to numerical form.
+daystonum = {'Mon':0,'Tue':1,'Wed':2,'Thu':3,'Fri':4,'Sat':5,'Sun':6}
+
+#  Numerical form of day of week converted to name.
+numtodays = {0:'Mon',1:'Tue',2:'Wed',3:'Thu',4:'Fri',5:'Sat',6:'Sun'}
+
 #  Convert from class name to the name fo the school.
 classtoschool = {'Cabrillo':'Cabrillo','Castlemont Tue 9:40':'Castlemont','Castlemont Tue 11:50':'Castlemont','Columbia':'Columbia','IBL_Thurs 9:50':'IBL',
 'IBL_Thurs 10:40':'IBL','IBL_Thurs 11:30':'IBL','IBL_Thurs 2:20':'IBL','Horn':'Horn','Irving High Thurs 1':'Irving','Irving High Thurs 9':'Irving',
@@ -33,6 +39,15 @@ classenrollment = {'Castlemont Tue 9:40':5,'Castemont Tue 11:50':2,'Columbia':8,
 'Overfelt':19,'Piedmont':15,'RL Turner Tue 8':13,'RL Turner Tue 1':15,'SLHS Thurs 12':14,'SLHS Thurs 1':14,'SLHS Thurs 2':21,
 'Sierramont Tue 10':17,'Sierramont Tue 12':19}
 
+# Find day of week based on the class.
+classtoday = {'Cabrillo':'Mon','Castlemont Tue 9:40':'Tue','Castlemont Tue 11:50':'Tue','Columbia':'Wed','IBL_Thurs 9:50':'Thu',
+'IBL_Thurs 10:40':'Thu','IBL_Thurs 11:30':'Thu','IBL_Thurs 2:20':'Thu','Horn':'Mon','Irving High Thurs 1':'Thu', 'Irving High Thurs 9':'Thu',
+'Irving High Thurs 3':'Thu','Morrill':'Tue','Nimitz Wed 12':'Wed', 'Nimitz Wed 10':'Wed', 'Nimitz Wed 3':'Wed', 'Overfelt':'Thu', 
+'Piedmont':'Tue', 'RL Turner Tue 8':'Tue','RL Turner Tue 1':'Tue','Sierramont Tue 10':'Tue', 'Sierramont Tue 12':'Tue','SLHS Thurs 12':'Thu',
+'SLHS Thurs 1':'Thu', 'SLHS Thurs 2':'Thu','Testing':'Mon'}
+
+#  Find session start and end time based on class.
+
 # Student operating system in each class.
 classtostudentos = {'Cabrillo':'Testing','Castlemont Tue 9:40':'Windows','Castlemont Tue 11:50':'Windows','Columbia':'Columbia',
 'Horn':'Testing','IBL_Thurs 9:50':'Windows','IBL_Thurs 10:40':'Windows','IBL_Thurs 11:30':'Windows','IBL_Thurs 2:20':'Windows',
@@ -48,6 +63,8 @@ classtonetwork = {'Cabrillo':'Testing','Castlemont Tue 9:40':'wired','Castlemont
 'Nimitz Wed 12':'wireless','Nimitz Wed 10':'wireless','Nimitz Wed 3':'wireless','Overfelt':'wired','Piedmont':'wireless',
 'RL Turner Tue 8':'wired','RL Turner Tue 1':'wired','Sierramont Tue 10':'wireless','Sierramont Tue 12':'wireless',
 'SLHS Thurs 12':'wired','SLHS Thurs 1':'wired','SLHS Thurs 2':'wired','Testing':'Testing'}
+
+#  Day of 
 
 #  List of schools.
 schoollist = ['Cabrillo','Castlemont','Columbia','IBL','Horn','Irving','Morrill','Nimitz','Overfelt','Piedmont','RL Turner','Sierramont','SLHS','Testing']

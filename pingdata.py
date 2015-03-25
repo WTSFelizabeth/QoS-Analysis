@@ -69,3 +69,20 @@ class PingData:
 		fig.clf
 
 		return
+
+#  Class for blackbox objects.
+class BlackboxData:
+
+		#  Create a PingData object.
+	def __init__(self, location, date, dayofweek, times, pingtimes, jitters, losses,session):
+
+		#  Link data to the object.
+		self.location = location
+		self.date = date
+		self.times = times
+		self.pingtimes = pingtimes
+		self.jitters = jitters
+		self.losses = losses
+
+		#  Create flag to determine whether this data contains a session day.
+		self.session = session
