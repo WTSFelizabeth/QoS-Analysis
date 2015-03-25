@@ -11,8 +11,8 @@ import matplotlib as mpl
 import csv
 import datetime as dt
 
-from dictionaries import months
-from pingdata import PingData
+from dictionaries import months, numtodays, classtoday
+from pingdata import PingData, BlackboxData
 
 
 
@@ -63,31 +63,46 @@ def datefind(datetimestr, format):
 	return date
 
 #  Separates out the time from the time stamp and retursn it as a time object (from the datetime module).
-def timefind(datetimestr):
+def timefind(datetimestr,typeflag=True):
 
-	#  Split the time from the date stamp.
-	datetimesplit = datetimestr.split()
-	datesplit = datetimesplit[0]
-	timesplit = datetimesplit[1]
+	#  Ping data format
+	if typeflag == True:
+		#  Split the time from the date stamp.
+		datetimesplit = datetimestr.split()
+		datesplit = datetimesplit[0]
+		timesplit = datetimesplit[1]
 
-	#  Split the date.
-	datesplit = datesplit.split('-')
+		#  Split the date.
+		datesplit = datesplit.split('-')
 
-	#  Find the day, month, and year.
-	day = int(datesplit[0])
-	month = months[datesplit[1]]
-	year = int(datesplit[2])
+		#  Find the day, month, and year.
+		day = int(datesplit[0])
+		month = months[datesplit[1]]
+		year = int(datesplit[2])
 
-	#  Split the hour, minute, and second.
-	timesplit = timesplit.split(':')
+		#  Split the hour, minute, and second.
+		timesplit = timesplit.split(':')
 
-	#  Find the hour, minute, and second.
-	hour = int(timesplit[0])
-	minute = int(timesplit[1])
-	second = int(timesplit[2])
+		#  Find the hour, minute, and second.
+		hour = int(timesplit[0])
+		minute = int(timesplit[1])
+		second = int(timesplit[2])
 
-	#  Create a time object.
-	time = dt.datetime(year,month,day,hour, minute, second)
+		#  Create a time object.
+		time = dt.datetime(year,month,day,hour, minute, second)
+
+	#  Blackbox data format
+	if typeflag == False:
+		#  Split the hour and minute
+		timesplit = datetimestr.split(':')
+
+		#  Find the hour, minute, and second.
+		hour = int(timesplit[0])
+		minute = int(timesplit[1])
+		second = int(0)
+
+		#  Create a time object.
+		time = dt.time(hour,minute,second)
 
 	#  Return the time.
 	return time
@@ -162,7 +177,6 @@ def pingimport(filelist):
 
 		#  Call pingread to read in the ping file.
 		filename = entry
-		print filename
 		date, location, bandwidth, times, pingtimes, jitters = pingread(filename)
 
 		#  Create a PingData object, add to the list.
@@ -173,8 +187,102 @@ def pingimport(filelist):
 	#  Return the list of PingData objects to main.py
 	return pingdatalist
 
+
+def blackboxread(file):
+
+	filename = file
+
+	#  initialize necessary lists and variables
+	count = 0
+	times = list()
+	pingtimes = list()
+	jitters = list()
+	losses = list()
+	session = list()
+
+	#  Determine the date ### Will need to be changed for non-test data ###
+	year = 2015
+	monthstr = 'Mar'
+	month = months[monthstr]
+	daysplit = filename.split('/')
+	daysplit = daysplit[7]
+	daysplit = daysplit.split('.')
+	daystr = daysplit[0]
+	day = int(daystr)
+	date = dt.date(year,month,day)
+	dayofweekint = date.weekday()
+	dayofweek = numtodays[dayofweekint]
+
+	#  Determine the location(s) ### Will need to be changed for non-test data ###
+	location = list()
+	location.append('Testing')
+
+	#  open the ping data file
+	with open(filename, 'rb') as csvfile:
+		filereader = csv.reader(csvfile)
+
+		#  loop over the lines of the ping data file, add data 
+		for line in filereader:
+			if (count == 0):
+				#  Increment count.
+				count += 1
+			
+			#  Read each line into the relevant lists.	
+			else:
+
+				#  Parse the row to pull out the date/time stamp
+				timestr = line[0]
+				time = timefind(timestr,typeflag = False)
+				times.append(time)
+
+				#  Parse the row to pull out the ping time
+				pingstr = line[1]
+				ping = float(pingstr)
+				pingtimes.append(ping)
+
+				#  Parse the row to pull out the jitter
+				jitterstr = line[2]
+				jitter = float(jitterstr)
+				jitters.append(jitter)
+
+				#  Parse the row to pull out packet loss
+				lossstr = line[3]
+				loss = float(lossstr)
+				losses.append(loss)
+
+				count += 1
+
+	#  Determine whether this dataset represents a session day (recursively for each location inclueded in file).
+	count = 0
+	for item in location:
+		sessionday = classtoday[item]
+		if (sessionday == dayofweek):
+			session.append(True)
+		else:
+			session.append(False)
+		count += 1
+
+	#  Return all the relevant values.
+	return date, dayofweek, location, times, pingtimes, jitters, losses, session
+
 def blackboximport(filelist):
 
-	testreturn = list()
+	blackboxdatalist = list()
 
-	return testreturn
+	#  Read data in for each file in the list.
+	for entry in filelist:
+
+		#  Call blackbox read to read in the blackbox file.
+		date, dayofweek, location, times, pingtimes, jitters, losses, session = blackboxread(entry)
+
+		#  Create a BlackboxData object, add to the list.
+		data = BlackboxData(location,date,dayofweek,times,pingtimes,jitters,losses,session)
+
+		blackboxdatalist.append(data)
+
+
+	return blackboxdatalist
+
+def blackboxanalyze(datalist):
+
+	return

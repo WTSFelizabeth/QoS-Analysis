@@ -74,7 +74,7 @@ class PingData:
 class BlackboxData:
 
 		#  Create a PingData object.
-	def __init__(self, location, date, times, pingtimes, jitters, losses):
+	def __init__(self, location, date, dayofweek, times, pingtimes, jitters, losses,session):
 
 		#  Link data to the object.
 		self.location = location
@@ -83,3 +83,6 @@ class BlackboxData:
 		self.pingtimes = pingtimes
 		self.jitters = jitters
 		self.losses = losses
+
+		#  Create flag to determine whether this data contains a session day.
+		self.session = session
