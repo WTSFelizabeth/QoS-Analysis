@@ -85,14 +85,15 @@ def surveydatesplit(surveylist):
 	return sessionObjectList
 
 #  Match session survey records to ping records.
-def pingmatch(sessionObject, pingObjects):
+def pingmatch(sessionObject, pingObjects, blackboxObjects):
 
 	#  Define properties of the surveys.
 	sessionloc = sessionObject.location
 	sessionloc = classformatconvert[sessionloc]
 	sessiondate = sessionObject.date
 
-	matchlist = list()
+	matchlist1 = list()
+	matchlist2 = list()
 
 	#  Determine which (if any) ping files match the survey session.
 	for item in pingObjects:
@@ -101,11 +102,21 @@ def pingmatch(sessionObject, pingObjects):
 		pingdate = item.date
 
 		if (pingloc == sessionloc) and (pingdate == sessiondate):
-			matchlist.append(item)
+			matchlist1.append(item)
 
-	return matchlist
+	#  Determine which (if any) blackbox session files match the survey session.
+	for item in blackboxObjects:
 
-def sessiongraph(sessionObject, pingObjects):
+		blackboxlocs = item.location
+		blackboxdate = item.date
+
+		for place in blackboxlocs:
+			if (place == sessionloc) and (blackboxdate == sessiondate):
+				matchlist2.append(item)
+
+	return matchlist1,matchlist2
+
+def sessiongraph(sessionObject, pingObjects, blackboxObjects):
 
 	overallcount = sessionObject.countOveralls()
 	location = sessionObject.location
@@ -115,6 +126,10 @@ def sessiongraph(sessionObject, pingObjects):
 	times = list()
 	pings = list()
 	jitters = list()
+	btimes = list()
+	bpings = list()
+	bjitters = list()
+	blosses = list()
 	bandwidth = 0
 
 	for item in pingObjects:
@@ -122,6 +137,12 @@ def sessiongraph(sessionObject, pingObjects):
 		pings.extend(item.pingtimes)
 		jitters.extend(item.jitters)
 		bandwidth = item.bandwidth
+
+	for item in blackboxObjects:
+		btimes.extend(item.times)
+		bpings.extend(item.pingtimes)
+		bjitters.extend(item.jitters)
+		blosses.extend(item.losses)
 
 	ind = np.array([0.5,1.5,2.5,3.5])
 	width = 0.65
@@ -161,16 +182,16 @@ def sessiongraph(sessionObject, pingObjects):
 
 
 	plt.subplot(223)
-	if (pings != []):
-		plt.plot(times,pings)
+	if (pings != [] or bpings != []):
+		plt.plot(times,pings,btimes,bpings)
 		plt.gca().xaxis.set_major_formatter(mpl.dates.DateFormatter("%H:%M"))
 		plt.title('Average Ping Times')
 		plt.xlabel('Time')
 		plt.ylabel('Average Ping Time (ms)')
 
 	plt.subplot(224)
-	if (jitters != []):
-		plt.plot(times,jitters)
+	if (jitters != [] or bjitters != []):
+		plt.plot(times,jitters,btimes,bjitters)
 		plt.gca().xaxis.set_major_formatter(mpl.dates.DateFormatter("%H:%M"))
 		plt.title('Jitter')
 		plt.xlabel('Time')
@@ -552,7 +573,7 @@ def metricsgraph(locations,dates,numbers,overallmetrics,hearingmetrics,delaymetr
 
 	return
 
-def sessionanalysis(surveylist,pinglist):
+def sessionanalysis(surveylist,pinglist,blackboxsessionlist):
 
 	sessionObjectList = surveydatesplit(surveylist)
 	sessionStatsList = list()
@@ -560,9 +581,9 @@ def sessionanalysis(surveylist,pinglist):
 
 	for item in sessionObjectList:
 
-		matchlist = pingmatch(item, pinglist)
+		matchlist,blackboxmatchlist = pingmatch(item, pinglist, blackboxsessionlist)
 
-		location,date,number,overallcount,hearingcount,delaycount,understandingcount,cuttingcount,videocount,whiteboardcount,pings,jitters,bandwidth = sessiongraph(item, matchlist)
+		location,date,number,overallcount,hearingcount,delaycount,understandingcount,cuttingcount,videocount,whiteboardcount,pings,jitters,bandwidth = sessiongraph(item, matchlist, blackboxmatchlist)
 
 		sessionStats = SessionStats(location, date, number, overallcount, hearingcount, delaycount, understandingcount, cuttingcount, videocount, whiteboardcount, pings, jitters, bandwidth)
 

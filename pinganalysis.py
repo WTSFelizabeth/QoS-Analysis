@@ -11,7 +11,7 @@ import matplotlib as mpl
 import csv
 import datetime as dt
 
-from dictionaries import months, numtodays, classtoday
+from dictionaries import months, numtodays, classtoday, locationtostart, locationtoend
 from pingdata import PingData, BlackboxData
 
 
@@ -283,6 +283,49 @@ def blackboximport(filelist):
 
 	return blackboxdatalist
 
+def pullsessiondata(data,location):
+
+	starttime = locationtostart[location]
+	endtime = locationtoend[location]
+
+	print starttime
+	print endtime
+
+	length = len(data.times)
+	i = 0
+
+	timecut = list()
+	pingcut = list()
+	jittercut = list()
+	losscut = list()
+
+	while (i < length):
+		if (data.times[i] >= starttime and data.times[i] <= endtime):
+			timecut.append(data.times[i])
+			pingcut.append(data.pingtimes[i])
+			jittercut.append(data.jitters[i])
+			losscut.append(data.losses[i])
+			i += 1
+		else:
+			i += 1
+
+	sessionData = BlackboxData(data.location,data.date,data.dayofweek,timecut,pingcut,jittercut,losscut,data.session)
+
+	return sessionData
+
 def blackboxanalyze(datalist):
 
-	return
+	sessiondatalist = list()
+
+	#  Loop over the full list of data.
+	for item in datalist:
+		#  If the data include a session, push to pullsessiondata to pull out a session data list.
+		count = 0
+		for flag in item.session:
+			if flag == True:
+				location = item.location[0]
+				test = pullsessiondata(item,location)
+				sessiondatalist.append(test)
+		count += 1
+
+	return sessiondatalist
