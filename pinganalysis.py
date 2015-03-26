@@ -291,11 +291,31 @@ def pullsessiondata(data,location):
 	print starttime
 	print endtime
 
-	test = 'test'
+	length = len(data.times)
+	i = 0
 
-	return test
+	timecut = list()
+	pingcut = list()
+	jittercut = list()
+	losscut = list()
+
+	while (i < length):
+		if (data.times[i] >= starttime and data.times[i] <= endtime):
+			timecut.append(data.times[i])
+			pingcut.append(data.pingtimes[i])
+			jittercut.append(data.jitters[i])
+			losscut.append(data.losses[i])
+			i += 1
+		else:
+			i += 1
+
+	sessionData = BlackboxData(data.location,data.date,data.dayofweek,timecut,pingcut,jittercut,losscut,data.session)
+
+	return sessionData
 
 def blackboxanalyze(datalist):
+
+	sessiondatalist = list()
 
 	#  Loop over the full list of data.
 	for item in datalist:
@@ -305,6 +325,7 @@ def blackboxanalyze(datalist):
 			if flag == True:
 				location = item.location[0]
 				test = pullsessiondata(item,location)
+				sessiondatalist.append(test)
 		count += 1
 
-	return
+	return sessiondatalist

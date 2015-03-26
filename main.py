@@ -25,10 +25,10 @@ from testboxfilelist import *
 #import all the ping data (required:  list of files)
 pinglist = pingimport(pingfiles)
 blackboxpinglist = blackboximport(blackboxpingfiles)
-blackboxanalyze(blackboxpinglist)
+blackboxsessionlist = blackboxanalyze(blackboxpinglist)
 
 #import the surveys
 classsurveylist = surveycontroller('surveys.txt')
 
 #  Feed the survey and class ping data to the session analysis module.
-sessionanalysis(classsurveylist,pinglist)
+sessionanalysis(classsurveylist,pinglist,blackboxsessionlist)
