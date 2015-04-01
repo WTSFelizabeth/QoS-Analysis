@@ -11,7 +11,7 @@ import matplotlib as mpl
 import csv
 import datetime as dt
 
-from dictionaries import months, numtodays, classtoday, locationtostart, locationtoend
+from dictionaries import months, numtodays, classtoday, locationtostart, locationtoend, blackboxlocationlist, classtoschool, blackboxschoollist
 from pingdata import PingData, BlackboxData
 
 
@@ -200,18 +200,25 @@ def blackboxread(file):
 	losses = list()
 	session = list()
 
-	#  Determine the date ### Will need to be changed for non-test data ###
+	#  Determine the date.
 	year = 2015
-	monthstr = 'Mar'
-	month = months[monthstr]
+	
 	daysplit = filename.split('/')
-	daysplit = daysplit[7]
-	daysplit = daysplit.split('.')
-	daystr = daysplit[0]
+	daysplit2 = daysplit[8]
+	daysplit2 = daysplit2.split('.')
+	daystr = daysplit2[0]
 	day = int(daystr)
+
+	monthstr = daysplit[7]
+	month = months[monthstr]
+
+	print month
+
+	#  Find the day of the week.
 	date = dt.date(year,month,day)
 	dayofweekint = date.weekday()
 	dayofweek = numtodays[dayofweekint]
+
 
 	#  Determine the location(s) ### Will need to be changed for non-test data ###
 	location = list()
@@ -283,13 +290,23 @@ def blackboximport(filelist):
 
 	return blackboxdatalist
 
+def graphblackboxdata(datalist):
+
+	schoollist = list()
+	
+	for item in datalist:
+		locations = item.location
+		school = classtoschool[locations[0]]
+		schoollist.append(school)
+
+	print schoollist
+
+	return
+
 def pullsessiondata(data,location):
 
 	starttime = locationtostart[location]
 	endtime = locationtoend[location]
-
-	print starttime
-	print endtime
 
 	length = len(data.times)
 	i = 0
@@ -327,5 +344,8 @@ def blackboxanalyze(datalist):
 				test = pullsessiondata(item,location)
 				sessiondatalist.append(test)
 		count += 1
+
+	#  Plot data for each site.
+	graphblackboxdata(datalist)
 
 	return sessiondatalist

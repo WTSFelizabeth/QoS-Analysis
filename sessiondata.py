@@ -33,7 +33,8 @@ def problemaverage(list,number):
 
 class SessionStats:
 
-	def __init__(self, location, date, number, overallcount, hearingcount, delaycount, understandingcount, cuttingcount, videocount, whiteboardcount, pings, jitters, bandwidth):
+	def __init__(self, location, date, number, overallcount, hearingcount, delaycount, understandingcount, cuttingcount, videocount, whiteboardcount, pings, 
+		jitters, bandwidth, bpings, bjitters, blosses):
 
 		#  Link data to the object.
 		self.location = location
@@ -49,6 +50,9 @@ class SessionStats:
 		self.pings = pings
 		self.jitters = jitters
 		self.bandwidth = bandwidth
+		self.bpings = bpings
+		self.bjitters = bjitters
+		self.blosses = blosses
 
 	def overallmetric(self):
 
