@@ -206,7 +206,7 @@ def sessiongraph(sessionObject, pingObjects, blackboxObjects):
 
 	plt.close()
 
-	return location, date, number, overallcount, hearingcount, delaycount, understandingcount, cuttingcount, videocount, whiteboardcount, pings, jitters, bandwidth
+	return location,date,number,overallcount,hearingcount,delaycount,understandingcount,cuttingcount,videocount,whiteboardcount,pings,jitters,bandwidth,bpings,bjitters,blosses
 
 def pearsonr(independent,dependent):
 
@@ -582,10 +582,10 @@ def sessionanalysis(surveylist,pinglist,blackboxsessionlist):
 	for item in sessionObjectList:
 
 		matchlist,blackboxmatchlist = pingmatch(item, pinglist, blackboxsessionlist)
+		
+		location,date,number,overallcount,hearingcount,delaycount,understandingcount,cuttingcount,videocount,whiteboardcount,pings,jitters,bandwidth,bpings,bjitters,blosses = sessiongraph(item, matchlist, blackboxmatchlist)
 
-		location,date,number,overallcount,hearingcount,delaycount,understandingcount,cuttingcount,videocount,whiteboardcount,pings,jitters,bandwidth = sessiongraph(item, matchlist, blackboxmatchlist)
-
-		sessionStats = SessionStats(location, date, number, overallcount, hearingcount, delaycount, understandingcount, cuttingcount, videocount, whiteboardcount, pings, jitters, bandwidth)
+		sessionStats = SessionStats(location, date, number, overallcount, hearingcount, delaycount, understandingcount, cuttingcount, videocount, whiteboardcount, pings, jitters, bandwidth,bpings,bjitters,blosses)
 
 		sessionStatsList.append(sessionStats)
 
@@ -641,6 +641,6 @@ def sessionanalysis(surveylist,pinglist,blackboxsessionlist):
 
 	#  Graph and analyze metrics vs. measures of connection quality, etc.
 	metricsgraph(locations,dates,numbers,overallmetrics,hearingmetrics,delaymetrics,understandingmetrics,cuttingmetrics,videometrics,whiteboardmetrics,
-		averagepings,averagepingstdevs,maxminpings,averagejitters,bandwidths)
+	averagepings,averagepingstdevs,maxminpings,averagejitters,bandwidths)
 
 	return	

@@ -8,10 +8,12 @@
 import numpy as np
 import scipy as sp
 import matplotlib as mpl
+import matplotlib.pyplot as plt
 import csv
 import datetime as dt
 
-from dictionaries import months, numtodays, classtoday, locationtostart, locationtoend
+
+from dictionaries import months, numtodays, classtoday, locationtostart, locationtoend, blackboxlocationlist, classtoschool, blackboxschoollist
 from pingdata import PingData, BlackboxData
 
 
@@ -200,18 +202,25 @@ def blackboxread(file):
 	losses = list()
 	session = list()
 
-	#  Determine the date ### Will need to be changed for non-test data ###
+	#  Determine the date.
 	year = 2015
-	monthstr = 'Mar'
-	month = months[monthstr]
+	
 	daysplit = filename.split('/')
-	daysplit = daysplit[7]
-	daysplit = daysplit.split('.')
-	daystr = daysplit[0]
+	daysplit2 = daysplit[8]
+	daysplit2 = daysplit2.split('.')
+	daystr = daysplit2[0]
 	day = int(daystr)
+
+	monthstr = daysplit[7]
+	month = months[monthstr]
+
+	print month
+
+	#  Find the day of the week.
 	date = dt.date(year,month,day)
 	dayofweekint = date.weekday()
 	dayofweek = numtodays[dayofweekint]
+
 
 	#  Determine the location(s) ### Will need to be changed for non-test data ###
 	location = list()
@@ -283,13 +292,154 @@ def blackboximport(filelist):
 
 	return blackboxdatalist
 
+def datetimecombine(date,times):
+
+	datetimelist = list()
+
+	for item in times:
+		datetimeobject = dt.datetime(date.year,date.month,date.day,item.hour,item.minute,item.second)
+		datetimelist.append(datetimeobject)
+
+	return datetimelist
+
+def graphdates(datalist,indexlist,school,startdate,enddate,smoothing=False):
+
+	count = 0
+	index = 0
+	datetimelist = list()
+	pinglist = list()
+	jitterlist = list()
+	losslist = list()
+
+	for item in datalist:
+		target = indexlist[index]
+		if (count == target):
+			datetimes = datetimecombine(item.date,item.times)
+			datetimelist.extend(datetimes)
+			pinglist.extend(item.pingtimes)
+			jitterlist.extend(item.jitters)
+			losslist.extend(item.losses)
+			count += 1
+			index += 1
+		else:
+			count += 1
+
+	fig = plt.figure()
+
+	plt.subplot(311)
+	plt.plot(datetimelist,pinglist)
+	plt.xlabel('Date')
+	plt.ylabel('Ping Time (ms)')
+	plt.axis([startdate,enddate,0,100])
+	plt.gca().xaxis.set_major_formatter(mpl.dates.DateFormatter("%b %d"))
+
+	plt.subplot(312)
+	plt.plot(datetimelist,jitterlist)
+	plt.xlabel('Date')
+	plt.ylabel('Jitter (ms)')
+	plt.axis([startdate,enddate,0,100])
+	plt.gca().xaxis.set_major_formatter(mpl.dates.DateFormatter("%b %d"))
+
+	plt.subplot(313)
+	plt.plot(datetimelist,losslist)
+	plt.xlabel('Date')
+	plt.ylabel('% of packets lost')
+	plt.axis([startdate,enddate,0,20])
+	plt.gca().xaxis.set_major_formatter(mpl.dates.DateFormatter("%b %d"))
+
+	fig.set_size_inches(10.5,18.5)
+
+	fig.savefig(school+'_blackboxsummary')
+	fig.clf()
+
+	plt.close()
+
+	return
+
+#  Map times to reference time lists (due to skips in blackbox files).  Use previous data to fill in gaps.
+def findtimes(reftimes,daytimes,daypings,dayjitters,daylosses):
+
+	print 'test'
+
+	return
+
+
+#  Stack days of the week to create an 'average week' graph and metrics.
+def stackdays(datalist,indexlist,startdate,enddate,includesessionday=True):
+
+	count = 0
+	index = 0
+	datetimelist = list()
+	pinglist = list()
+	jitterlist = list()
+	losslist = list()
+
+	#  Establish reftimes list.
+	i = 0
+	reftimes = list()
+	initialtime = dt.datetime(2015,1,1,0,0,0)
+	timestep = dt.timedelta(0,0,0,0,1,0)
+
+	while i < 1440:
+		refdatetime = initialtime + timestep*i
+		reftimes.append(refdatetime.time())
+		i += 1
+
+	for item in datalist:
+		target = indexlist[index]
+
+
+		if (count == target):
+			
+			if item.date >= startdate and item.date <= enddate:
+
+				dayofweek = item.dayofweek
+				daytimes = item.times
+				daypings = item.pingtimes
+				dayjitters = item.jitters
+				daylosses = item.losses
+
+				findtimes(reftimes,daytimes,daypings,dayjitters,daylosses)
+
+				count += 1
+				index += 1
+
+		else:
+			count += 1
+		
+
+	return
+
+def sortblackboxdata(datalist):
+
+	schoollist = list()
+	
+	for item in datalist:
+		locations = item.location
+		school = classtoschool[locations[0]]
+		schoollist.append(school)
+
+
+	for school in blackboxschoollist:
+
+		index = 0
+		indexlist = list()
+
+		for item in datalist:
+			if schoollist[index] == school:
+				indexlist.append(index)
+			index += 1
+
+		if (indexlist != []):
+			graphdates(datalist,indexlist,school,dt.datetime(2015,3,18),dt.datetime(2015,3,24))
+			stackdays(datalist,indexlist,dt.date(2015,3,18),dt.date(2015,3,24))
+
+	return
+
 def pullsessiondata(data,location):
 
 	starttime = locationtostart[location]
 	endtime = locationtoend[location]
-
-	print starttime
-	print endtime
 
 	length = len(data.times)
 	i = 0
@@ -327,5 +477,8 @@ def blackboxanalyze(datalist):
 				test = pullsessiondata(item,location)
 				sessiondatalist.append(test)
 		count += 1
+
+	#  Plot data for each site.
+	sortblackboxdata(datalist)
 
 	return sessiondatalist
