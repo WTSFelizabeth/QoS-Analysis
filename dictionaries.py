@@ -7,6 +7,9 @@ import datetime as dt
 #  Months of the year converted to numerical form.
 months = {'Jan':1,'Feb':2,'Mar':3,'Apr':4,'May':5,'Jun':6,'Jul':7,'Aug':8,'Sep':9,'Oct':10,'Nov':11,'Dec':12}
 
+#  Days of the week in string form.
+daysofweek = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun']
+
 #  Days of week converted to numerical form.
 daystonum = {'Mon':0,'Tue':1,'Wed':2,'Thu':3,'Fri':4,'Sat':5,'Sun':6}
 
