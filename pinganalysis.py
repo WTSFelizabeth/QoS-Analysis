@@ -358,9 +358,36 @@ def graphdates(datalist,indexlist,school,startdate,enddate,smoothing=False):
 #  Map times to reference time lists (due to skips in blackbox files).  Use previous data to fill in gaps.
 def findtimes(reftimes,daytimes,daypings,dayjitters,daylosses):
 
-	print 'test'
+	timelength = len(reftimes)
+	daylength = len(daytimes)
+	i = 0
+	j = 0
+	pings = list()
+	jitters = list()
+	losses = list()
 
-	return
+	while i < timelength:
+
+		if j >= daylength:
+			pings.append(daypings[j-1])
+			jitters.append(dayjitters[j-1])
+			losses.append(daylosses[j-1])
+			i += 1
+		elif reftimes[i] == daytimes[j]:
+			pings.append(daypings[j])
+			jitters.append(dayjitters[j])
+			losses.append(daylosses[j])
+			i += 1
+			j += 1
+		else:
+			pings.append(daypings[j-1])
+			jitters.append(dayjitters[j-1])
+			losses.append(daylosses[j-1])
+			i += 1
+
+	print len(pings)
+
+	return pings,jitters,losses
 
 
 #  Stack days of the week to create an 'average week' graph and metrics.
@@ -384,9 +411,26 @@ def stackdays(datalist,indexlist,startdate,enddate,includesessionday=True):
 		reftimes.append(refdatetime.time())
 		i += 1
 
+	#  Declare np.array objects for each day of the week.
+	monday = np.zeros((3,1440))
+	tuesday = np.zeros((3,1440))
+	wednesday = np.zeros((3,1440))
+	thursday = np.zeros((3,1440))
+	friday = np.zeros((3,1440))
+	saturday = np.zeros((3,1440))
+	sunday = np.zeros((3,1440))
+
+	#  Declare counts for each day of the week.
+	moncount = 0
+	tuecount = 0
+	wedcount = 0
+	thucount = 0
+	fricount = 0
+	satcount = 0
+	suncount = 0
+
 	for item in datalist:
 		target = indexlist[index]
-
 
 		if (count == target):
 			
@@ -398,14 +442,61 @@ def stackdays(datalist,indexlist,startdate,enddate,includesessionday=True):
 				dayjitters = item.jitters
 				daylosses = item.losses
 
-				findtimes(reftimes,daytimes,daypings,dayjitters,daylosses)
+				#  Correct for skipped minutes
+				correctedpings, correctedjitters, correctedlosses = findtimes(reftimes,daytimes,daypings,dayjitters,daylosses)
+
+				#  Stack corrected values to the correct day of the week.
+				if dayofweek == 'Mon':
+					monday[0] += np.array(correctedpings)
+					monday[1] += np.array(correctedjitters)
+					monday[2] += np.array(correctedlosses)
+					moncount += 1
+				elif dayofweek == 'Tue':
+					tuesday[0] += np.array(correctedpings)
+					tuesday[1] += np.array(correctedjitters)
+					tuesday[2] += np.array(correctedlosses)
+					tuecount += 1
+				elif dayofweek == 'Wed':
+					wednesday[0] += np.array(correctedpings)
+					wednesday[1] += np.array(correctedjitters)
+					wednesday[2] += np.array(correctedlosses)
+					wedcount += 1
+				elif dayofweek == 'Thu':
+					thursday[0] += np.array(correctedpings)
+					thursday[1] += np.array(correctedjitters)
+					thursday[2] += np.array(correctedlosses)
+					thucount += 1
+				elif dayofweek == 'Fri':
+					friday[0] += np.array(correctedpings)
+					friday[1] += np.array(correctedjitters)
+					friday[2] += np.array(correctedlosses)
+					fricount += 1
+				elif dayofweek == 'Sat':
+					saturday[0] += np.array(correctedpings)
+					saturday[1] += np.array(correctedjitters)
+					saturday[2] += np.array(correctedlosses)
+					satcount += 1
+				elif dayofweek == 'Sun':
+					sunday[0] += np.array(correctedpings)
+					sunday[1] += np.array(correctedjitters)
+					sunday[2] += np.array(correctedlosses)
+					suncount += 1
 
 				count += 1
 				index += 1
 
 		else:
 			count += 1
-		
+
+	monaverage = monday/moncount
+	tueaverage = tuesday/tuecount
+	wedaverage = wednesday/wedcount
+	thuaverage = thursday/thucount
+	friaverage = friday/fricount
+	sataverage = saturday/satcount
+	sunaverage = sunday/suncount
+	
+	
 
 	return
 
