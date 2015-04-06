@@ -5,6 +5,8 @@
 #  Last Modified: 11.18.14
 #  Description:  
 
+from __future__ import division 
+
 import numpy as np
 import scipy as sp
 import matplotlib as mpl
@@ -213,8 +215,6 @@ def blackboxread(file):
 	monthstr = daysplit[7]
 	month = months[monthstr]
 
-	print month
-
 	#  Find the day of the week.
 	date = dt.date(year,month,day)
 	dayofweekint = date.weekday()
@@ -385,13 +385,11 @@ def findtimes(reftimes,daytimes,daypings,dayjitters,daylosses):
 			losses.append(daylosses[j-1])
 			i += 1
 
-	print len(pings)
-
 	return pings,jitters,losses
 
 
 #  Stack days of the week to create an 'average week' graph and metrics.
-def stackdays(datalist,indexlist,startdate,enddate,includesessionday=True):
+def stackdays(datalist,indexlist,school,startdate,enddate,includesessionday=True):
 
 	count = 0
 	index = 0
@@ -488,6 +486,7 @@ def stackdays(datalist,indexlist,startdate,enddate,includesessionday=True):
 		else:
 			count += 1
 
+	#  Calculate averages for each day of the week.
 	monaverage = monday/moncount
 	tueaverage = tuesday/tuecount
 	wedaverage = wednesday/wedcount
@@ -495,8 +494,61 @@ def stackdays(datalist,indexlist,startdate,enddate,includesessionday=True):
 	friaverage = friday/fricount
 	sataverage = saturday/satcount
 	sunaverage = sunday/suncount
-	
-	
+
+	#  Plot average week at this school site.
+
+	#  Stack weekends and weekdays for this school site.
+	stackedweekday = np.array((3,1440))
+	stackedweekend = np.array((3,1440))
+
+	stackedweekday = (monaverage+tueaverage+wedaverage+thuaverage+friaverage)/5
+	stackedweekend = (sataverage+sunaverage)+2
+	hours = np.linspace(0,24,num=1440)
+
+	#  Plot average weekday and weekend day at the school.
+	fig = plt.figure()
+
+	plt.subplot(311)
+	plt.plot(hours,stackedweekend[0],color = 'orange')
+	plt.plot(hours,stackedweekday[1],color = 'blue')
+	weekday = mpl.patches.Patch(color = 'blue',label = 'Average Weekday')
+	weekend = mpl.patches.Patch(color = 'orange',label = 'Average Weekend')
+	plt.legend(handles=[weekday,weekend],prop={'size':10})
+	plt.axis([0,24,0,50])
+	plt.title('Average Ping Time on Weekdays vs. Weekends')
+	plt.xlabel('Hour of Day')
+	plt.ylabel('Average Ping Time (ms)')
+
+	plt.subplot(312)
+	plt.plot(hours,stackedweekend[1],color = 'orange')
+	plt.plot(hours,stackedweekday[1],color = 'blue')
+	weekday = mpl.patches.Patch(color = 'blue',label = 'Average Weekday')
+	weekend = mpl.patches.Patch(color = 'orange',label = 'Average Weekend')
+	plt.legend(handles=[weekday,weekend],prop={'size':10})
+	plt.axis([0,24,0,50])
+	plt.title('Average Jitter on Weekdays vs. Weekends')
+	plt.xlabel('Hour of Day')
+	plt.ylabel('Jitter (ms)')
+
+	plt.subplot(313)
+	plt.plot(hours,stackedweekend[2],color = 'orange')
+	plt.plot(hours,stackedweekday[2],color = 'blue')
+	weekday = mpl.patches.Patch(color = 'blue',label = 'Average Weekday')
+	weekend = mpl.patches.Patch(color = 'orange',label = 'Average Weekend')
+	plt.legend(handles=[weekday,weekend],prop={'size':10})
+	plt.axis([0,24,0,15])
+	plt.title('Average Packet Loss on Weekdays vs. Weekends')
+	plt.xlabel('Hour of Day')
+	plt.ylabel('Average Packet Loss (%)')
+
+	plt.suptitle('Weekday vs. Weekend Network - '+school,fontsize=20)
+
+	fig.set_size_inches(10.5,18.5)
+
+	fig.savefig('WeekdayvsWeekend'+'_'+school)
+
+	fig.clf()
+	plt.close()
 
 	return
 
@@ -522,7 +574,7 @@ def sortblackboxdata(datalist):
 
 		if (indexlist != []):
 			graphdates(datalist,indexlist,school,dt.datetime(2015,3,18),dt.datetime(2015,3,24))
-			stackdays(datalist,indexlist,dt.date(2015,3,18),dt.date(2015,3,24))
+			stackdays(datalist,indexlist,school,dt.date(2015,3,18),dt.date(2015,3,24))
 
 	return
 
