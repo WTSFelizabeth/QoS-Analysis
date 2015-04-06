@@ -15,6 +15,7 @@ import csv
 import datetime as dt
 
 from dictionaries import months, numtodays, classtoday, locationtostart, locationtoend, blackboxlocationlist, classtoschool, blackboxschoollist
+from dictionaries import blackboxschooltoday
 from pingdata import PingData, BlackboxData
 
 
@@ -388,6 +389,103 @@ def findtimes(reftimes,daytimes,daypings,dayjitters,daylosses):
 	return pings,jitters,losses
 
 
+def plotweekcomp(hours,stackedweekday,stackedweekend,school):
+	
+	fig = plt.figure()
+
+	plt.subplot(311)
+	plt.plot(hours,stackedweekend[0],color = 'orange')
+	plt.plot(hours,stackedweekday[1],color = 'blue')
+	weekday = mpl.patches.Patch(color = 'blue',label = 'Average Weekday')
+	weekend = mpl.patches.Patch(color = 'orange',label = 'Average Weekend')
+	plt.legend(handles=[weekday,weekend],prop={'size':10})
+	plt.axis([0,24,0,50])
+	plt.title('Average Ping Time on Weekdays vs. Weekends')
+	plt.xlabel('Hour of Day')
+	plt.ylabel('Average Ping Time (ms)')
+
+	plt.subplot(312)
+	plt.plot(hours,stackedweekend[1],color = 'orange')
+	plt.plot(hours,stackedweekday[1],color = 'blue')
+	weekday = mpl.patches.Patch(color = 'blue',label = 'Average Weekday')
+	weekend = mpl.patches.Patch(color = 'orange',label = 'Average Weekend')
+	plt.legend(handles=[weekday,weekend],prop={'size':10})
+	plt.axis([0,24,0,50])
+	plt.title('Average Jitter on Weekdays vs. Weekends')
+	plt.xlabel('Hour of Day')
+	plt.ylabel('Jitter (ms)')
+
+	plt.subplot(313)
+	plt.plot(hours,stackedweekend[2],color = 'orange')
+	plt.plot(hours,stackedweekday[2],color = 'blue')
+	weekday = mpl.patches.Patch(color = 'blue',label = 'Average Weekday')
+	weekend = mpl.patches.Patch(color = 'orange',label = 'Average Weekend')
+	plt.legend(handles=[weekday,weekend],prop={'size':10})
+	plt.axis([0,24,0,15])
+	plt.title('Average Packet Loss on Weekdays vs. Weekends')
+	plt.xlabel('Hour of Day')
+	plt.ylabel('Average Packet Loss (%)')
+
+	plt.suptitle('Weekday vs. Weekend Network - '+school,fontsize=20)
+
+	fig.set_size_inches(10.5,18.5)
+
+	fig.savefig('WeekdayvsWeekend'+'_'+school)
+
+	fig.clf()
+	plt.close()
+
+	return
+
+def plotsessioncomp(hours,stackedsession,stackedweek,school):
+
+	fig = plt.figure()
+
+	plt.subplot(311)
+	plt.plot(hours,stackedweek[0],color = 'orange')
+	plt.plot(hours,stackedsession[1],color = 'blue')
+	session = mpl.patches.Patch(color = 'blue',label = 'Average Session Day')
+	nosession = mpl.patches.Patch(color = 'orange',label = 'Average Non-Session Day')
+	plt.legend(handles=[session,nosession],prop={'size':10})
+	plt.axis([0,24,0,50])
+	plt.title('Average Ping Time on Session vs. Non-Session Days')
+	plt.xlabel('Hour of Day')
+	plt.ylabel('Average Ping Time (ms)')
+
+	plt.subplot(312)
+	plt.plot(hours,stackedweek[1],color = 'orange')
+	plt.plot(hours,stackedsession[1],color = 'blue')
+	session = mpl.patches.Patch(color = 'blue',label = 'Average Session Day')
+	nosession = mpl.patches.Patch(color = 'orange',label = 'Average Non-Session Day')
+	plt.legend(handles=[session,nosession],prop={'size':10})
+	plt.axis([0,24,0,50])
+	plt.title('Average Jitter on Session vs. Non-Session Days')
+	plt.xlabel('Hour of Day')
+	plt.ylabel('Jitter (ms)')
+
+	plt.subplot(313)
+	plt.plot(hours,stackedweek[2],color = 'orange')
+	plt.plot(hours,stackedsession[2],color = 'blue')
+	session = mpl.patches.Patch(color = 'blue',label = 'Average Session Day')
+	nosession = mpl.patches.Patch(color = 'orange',label = 'Average Non-Session Day')
+	plt.legend(handles=[session,nosession],prop={'size':10})
+	plt.axis([0,24,0,15])
+	plt.title('Average Packet Loss on Session vs. Non-Session Days')
+	plt.xlabel('Hour of Day')
+	plt.ylabel('Average Packet Loss (%)')
+
+	plt.suptitle('Session vs. Non-Session Weekday Network - '+school,fontsize=20)
+
+	fig.set_size_inches(10.5,18.5)
+
+	fig.savefig('SessionvsNoSession'+'_'+school)
+
+	fig.clf()
+	plt.close()
+
+	return
+
+
 #  Stack days of the week to create an 'average week' graph and metrics.
 def stackdays(datalist,indexlist,school,startdate,enddate,includesessionday=True):
 
@@ -497,58 +595,34 @@ def stackdays(datalist,indexlist,school,startdate,enddate,includesessionday=True
 
 	#  Plot average week at this school site.
 
-	#  Stack weekends and weekdays for this school site.
+	#  Stack weekends and weekdays for this school site, then plot stacked results.
 	stackedweekday = np.array((3,1440))
 	stackedweekend = np.array((3,1440))
 
 	stackedweekday = (monaverage+tueaverage+wedaverage+thuaverage+friaverage)/5
-	stackedweekend = (sataverage+sunaverage)+2
+	stackedweekend = (sataverage+sunaverage)/2
 	hours = np.linspace(0,24,num=1440)
 
-	#  Plot average weekday and weekend day at the school.
-	fig = plt.figure()
+	plotweekcomp(hours,stackedweekday,stackedweekend,school)
 
-	plt.subplot(311)
-	plt.plot(hours,stackedweekend[0],color = 'orange')
-	plt.plot(hours,stackedweekday[1],color = 'blue')
-	weekday = mpl.patches.Patch(color = 'blue',label = 'Average Weekday')
-	weekend = mpl.patches.Patch(color = 'orange',label = 'Average Weekend')
-	plt.legend(handles=[weekday,weekend],prop={'size':10})
-	plt.axis([0,24,0,50])
-	plt.title('Average Ping Time on Weekdays vs. Weekends')
-	plt.xlabel('Hour of Day')
-	plt.ylabel('Average Ping Time (ms)')
+	#  Pull out and compare non-session days to session days.  
+	sessiondaystr = blackboxschooltoday[school]
 
-	plt.subplot(312)
-	plt.plot(hours,stackedweekend[1],color = 'orange')
-	plt.plot(hours,stackedweekday[1],color = 'blue')
-	weekday = mpl.patches.Patch(color = 'blue',label = 'Average Weekday')
-	weekend = mpl.patches.Patch(color = 'orange',label = 'Average Weekend')
-	plt.legend(handles=[weekday,weekend],prop={'size':10})
-	plt.axis([0,24,0,50])
-	plt.title('Average Jitter on Weekdays vs. Weekends')
-	plt.xlabel('Hour of Day')
-	plt.ylabel('Jitter (ms)')
+	#  Find average session and non-session days.
+	if sessiondaystr == 'Mon':
+		sessionaverage = monaverage
+		nosessionaverage = (tueaverage+wedaverage+thuaverage+friaverage)/4
+	elif sessiondaystr == 'Tue':
+		sessionaverage = tueaverage
+		nosessionaverage = (monaverage+wedaverage+thuaverage+friaverage)/4
+	elif sessiondaystr == 'Wed':
+		sessionaverage = wedaverage
+		nosessionaverage = (monaverage+tueaverage+thuaverage+friaverage)/4
+	elif sessiondaystr == 'Thu':
+		sessionaverage = thuaverage
+		nosessionaverage = (monaverage+tueaverage+wedaverage+friaverage)/4
 
-	plt.subplot(313)
-	plt.plot(hours,stackedweekend[2],color = 'orange')
-	plt.plot(hours,stackedweekday[2],color = 'blue')
-	weekday = mpl.patches.Patch(color = 'blue',label = 'Average Weekday')
-	weekend = mpl.patches.Patch(color = 'orange',label = 'Average Weekend')
-	plt.legend(handles=[weekday,weekend],prop={'size':10})
-	plt.axis([0,24,0,15])
-	plt.title('Average Packet Loss on Weekdays vs. Weekends')
-	plt.xlabel('Hour of Day')
-	plt.ylabel('Average Packet Loss (%)')
-
-	plt.suptitle('Weekday vs. Weekend Network - '+school,fontsize=20)
-
-	fig.set_size_inches(10.5,18.5)
-
-	fig.savefig('WeekdayvsWeekend'+'_'+school)
-
-	fig.clf()
-	plt.close()
+	plotsessioncomp(hours,sessionaverage,nosessionaverage,school)
 
 	return
 
