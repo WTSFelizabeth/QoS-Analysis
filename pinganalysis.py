@@ -510,6 +510,15 @@ def stackdays(datalist,sessiondatalist,school,startdate,enddate):
 	saturday = np.zeros((3,1440))
 	sunday = np.zeros((3,1440))
 
+	#  Declare np.array objects average standard deviations for each day of the week.
+	monstandarddevs = np.zeros((3))
+	tuestandarddevs = np.zeros((3))
+	wedstandarddevs = np.zeros((3))
+	thustandarddevs = np.zeros((3))
+	fristandarddevs = np.zeros((3))
+	satstandarddevs = np.zeros((3))
+	sunstandarddevs = np.zeros((3))
+
 	#  Declare counts for each day of the week.
 	moncount = 0
 	tuecount = 0
@@ -537,36 +546,57 @@ def stackdays(datalist,sessiondatalist,school,startdate,enddate):
 				monday[0] += np.array(correctedpings)
 				monday[1] += np.array(correctedjitters)
 				monday[2] += np.array(correctedlosses)
+				monstandarddevs[0] += np.std(monday[0])
+				monstandarddevs[1] += np.std(monday[1])
+				monstandarddevs[2] += np.std(monday[2])
 				moncount += 1
 			elif dayofweek == 'Tue':
 				tuesday[0] += np.array(correctedpings)
 				tuesday[1] += np.array(correctedjitters)
 				tuesday[2] += np.array(correctedlosses)
+				tuestandarddevs[0] += np.std(tuesday[0])
+				tuestandarddevs[1] += np.std(tuesday[1])
+				tuestandarddevs[2] += np.std(tuesday[2])
 				tuecount += 1
 			elif dayofweek == 'Wed':
 				wednesday[0] += np.array(correctedpings)
 				wednesday[1] += np.array(correctedjitters)
 				wednesday[2] += np.array(correctedlosses)
+				wedstandarddevs[0] += np.std(wednesday[0])
+				wedstandarddevs[1] += np.std(wednesday[1])
+				wedstandarddevs[2] += np.std(wednesday[2])
 				wedcount += 1
 			elif dayofweek == 'Thu':
 				thursday[0] += np.array(correctedpings)
 				thursday[1] += np.array(correctedjitters)
 				thursday[2] += np.array(correctedlosses)
+				thustandarddevs[0] += np.std(thursday[0])
+				thustandarddevs[1] += np.std(thursday[1])
+				thustandarddevs[2] += np.std(thursday[2])
 				thucount += 1
 			elif dayofweek == 'Fri':
 				friday[0] += np.array(correctedpings)
 				friday[1] += np.array(correctedjitters)
 				friday[2] += np.array(correctedlosses)
+				fristandarddevs[0] += np.std(friday[0])
+				fristandarddevs[1] += np.std(friday[1])
+				fristandarddevs[2] += np.std(friday[2])
 				fricount += 1
 			elif dayofweek == 'Sat':
 				saturday[0] += np.array(correctedpings)
 				saturday[1] += np.array(correctedjitters)
 				saturday[2] += np.array(correctedlosses)
+				satstandarddevs[0] += np.std(saturday[0])
+				satstandarddevs[1] += np.std(saturday[1])
+				satstandarddevs[2] += np.std(saturday[2])
 				satcount += 1
 			elif dayofweek == 'Sun':
 				sunday[0] += np.array(correctedpings)
 				sunday[1] += np.array(correctedjitters)
 				sunday[2] += np.array(correctedlosses)
+				sunstandarddevs[0] += np.std(sunday[0])
+				sunstandarddevs[1] += np.std(sunday[1])
+				sunstandarddevs[2] += np.std(sunday[2])
 				suncount += 1
 
 			count += 1
@@ -583,12 +613,25 @@ def stackdays(datalist,sessiondatalist,school,startdate,enddate):
 	sataverage = saturday/satcount
 	sunaverage = sunday/suncount
 
+	#  Calculate averages standard deviations for each day of the week.
+	monstandarddevs = monstandarddevs/moncount
+	tuestandarddevs = tuestandarddevs/tuecount
+	wedstandarddevs = wedstandarddevs/wedcount
+	thustandarddevs = thustandarddevs/thucount
+	fristandarddevs = fristandarddevs/fricount
+	satstandarddevs = satstandarddevs/satcount
+	sunstandarddevs = sunstandarddevs/suncount
+
 	#  Stack weekends and weekdays for this school site, then plot stacked results.
 	stackedweekday = np.array((3,1440))
 	stackedweekend = np.array((3,1440))
+	stackedweekdaystd = np.array((3))
+	stackedweekendstd = np.array((3))
 
 	stackedweekday = (monaverage+tueaverage+wedaverage+thuaverage+friaverage)/5
+	stackedweekdaystd = (monstandarddevs+tuestandarddevs+wedstandarddevs+thustandarddevs+fristandarddevs)/5
 	stackedweekend = (sataverage+sunaverage)/2
+	stackedweekendstd = (satstandarddevs+sunstandarddevs)/2
 	hours = np.linspace(0,24,num=1440)
 
 	plotweekcomp(hours,stackedweekday,stackedweekend,school)
@@ -599,16 +642,24 @@ def stackdays(datalist,sessiondatalist,school,startdate,enddate):
 	#  Find average session and non-session days.
 	if sessiondaystr == 'Mon':
 		sessionaverage = monaverage
+		sesssionstd = monstandarddevs
 		nosessionaverage = (tueaverage+wedaverage+thuaverage+friaverage)/4
+		nosessionstd = (tuestandarddevs+wedstandarddevs+thustandarddevs+fristandarddevs)/4
 	elif sessiondaystr == 'Tue':
 		sessionaverage = tueaverage
+		sessionstd = tuestandarddevs
 		nosessionaverage = (monaverage+wedaverage+thuaverage+friaverage)/4
+		nosessionstd = (monstandarddevs+wedstandarddevs+thustandarddevs+fristandarddevs)/4
 	elif sessiondaystr == 'Wed':
 		sessionaverage = wedaverage
+		sessionstd = wedstandarddevs
 		nosessionaverage = (monaverage+tueaverage+thuaverage+friaverage)/4
+		nosessionstd = (monstandarddevs+tuestandarddevs+thustandarddevs+fristandarddevs)/4
 	elif sessiondaystr == 'Thu':
 		sessionaverage = thuaverage
+		sessionstd = thustandarddevs
 		nosessionaverage = (monaverage+tueaverage+wedaverage+friaverage)/4
+		nosessionstd = (monstandarddevs+tuestandarddevs+wedstandarddevs+fristandarddevs)/4
 
 	plotsessioncomp(hours,sessionaverage,nosessionaverage,school)
 
