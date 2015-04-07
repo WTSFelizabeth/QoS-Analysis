@@ -149,18 +149,18 @@ def sessiongraph(sessionObject, pingObjects, blackboxObjects):
 
 	fig = plt.figure()
 
-	plt.subplot(221)
+	"""plt.subplot(221)
 	plt.bar(ind,overallcount,width)
 	plt.xticks(ind+width/2., ('Excellent', 'Good', 'Fair', 'Poor'))
 	plt.axis([0,5,0,1])
 	plt.title('Overall Survey Results')
-	plt.ylabel('Proportion of Survey Respondents')
+	plt.ylabel('Proportion of Survey Respondents')"""
 
 	ind = np.array([0.5,1.5,2.5,3.5,4.5,5.5])
 	hearingcount, delaycount, understandingcount, cuttingcount, videocount, whiteboardcount = sessionObject.countProblems()
 	width = 0.65
 
-	littlelist = list()
+	"""littlelist = list()
 	mediumlist = list()
 	biglist = list()
 
@@ -202,7 +202,7 @@ def sessiongraph(sessionObject, pingObjects, blackboxObjects):
 	fig.set_size_inches(18.5,10.5)
 
 	fig.savefig(location+'_'+date)
-	fig.clf()
+	fig.clf()"""
 
 	plt.close()
 
