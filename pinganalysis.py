@@ -16,6 +16,7 @@ import datetime as dt
 
 
 from dictionaries import months, numtodays, classtoday, locationtostart, locationtoend, blackboxlocationlist, classtoschool, blackboxschoollist
+from dictionaries import blackboxschooltoday
 from pingdata import PingData, BlackboxData
 
 
@@ -302,7 +303,7 @@ def datetimecombine(date,times):
 
 	return datetimelist
 
-def graphdates(datalist,indexlist,school,startdate,enddate,smoothing=False):
+def graphdates(schoolitemlist,school,startdate,enddate,smoothing=False):
 
 	count = 0
 	index = 0
@@ -311,18 +312,12 @@ def graphdates(datalist,indexlist,school,startdate,enddate,smoothing=False):
 	jitterlist = list()
 	losslist = list()
 
-	for item in datalist:
-		target = indexlist[index]
-		if (count == target):
-			datetimes = datetimecombine(item.date,item.times)
-			datetimelist.extend(datetimes)
-			pinglist.extend(item.pingtimes)
-			jitterlist.extend(item.jitters)
-			losslist.extend(item.losses)
-			count += 1
-			index += 1
-		else:
-			count += 1
+	for item in schoolitemlist:
+		datetimes = datetimecombine(item.date,item.times)
+		datetimelist.extend(datetimes)
+		pinglist.extend(item.pingtimes)
+		jitterlist.extend(item.jitters)
+		losslist.extend(item.losses)
 
 	fig = plt.figure()
 
@@ -389,124 +384,8 @@ def findtimes(reftimes,daytimes,daypings,dayjitters,daylosses):
 	return pings,jitters,losses
 
 
-#  Stack days of the week to create an 'average week' graph and metrics.
-def stackdays(datalist,indexlist,school,startdate,enddate,includesessionday=True):
-
-	count = 0
-	index = 0
-	datetimelist = list()
-	pinglist = list()
-	jitterlist = list()
-	losslist = list()
-
-	#  Establish reftimes list.
-	i = 0
-	reftimes = list()
-	initialtime = dt.datetime(2015,1,1,0,0,0)
-	timestep = dt.timedelta(0,0,0,0,1,0)
-
-	while i < 1440:
-		refdatetime = initialtime + timestep*i
-		reftimes.append(refdatetime.time())
-		i += 1
-
-	#  Declare np.array objects for each day of the week.
-	monday = np.zeros((3,1440))
-	tuesday = np.zeros((3,1440))
-	wednesday = np.zeros((3,1440))
-	thursday = np.zeros((3,1440))
-	friday = np.zeros((3,1440))
-	saturday = np.zeros((3,1440))
-	sunday = np.zeros((3,1440))
-
-	#  Declare counts for each day of the week.
-	moncount = 0
-	tuecount = 0
-	wedcount = 0
-	thucount = 0
-	fricount = 0
-	satcount = 0
-	suncount = 0
-
-	for item in datalist:
-		target = indexlist[index]
-
-		if (count == target):
-			
-			if item.date >= startdate and item.date <= enddate:
-
-				dayofweek = item.dayofweek
-				daytimes = item.times
-				daypings = item.pingtimes
-				dayjitters = item.jitters
-				daylosses = item.losses
-
-				#  Correct for skipped minutes
-				correctedpings, correctedjitters, correctedlosses = findtimes(reftimes,daytimes,daypings,dayjitters,daylosses)
-
-				#  Stack corrected values to the correct day of the week.
-				if dayofweek == 'Mon':
-					monday[0] += np.array(correctedpings)
-					monday[1] += np.array(correctedjitters)
-					monday[2] += np.array(correctedlosses)
-					moncount += 1
-				elif dayofweek == 'Tue':
-					tuesday[0] += np.array(correctedpings)
-					tuesday[1] += np.array(correctedjitters)
-					tuesday[2] += np.array(correctedlosses)
-					tuecount += 1
-				elif dayofweek == 'Wed':
-					wednesday[0] += np.array(correctedpings)
-					wednesday[1] += np.array(correctedjitters)
-					wednesday[2] += np.array(correctedlosses)
-					wedcount += 1
-				elif dayofweek == 'Thu':
-					thursday[0] += np.array(correctedpings)
-					thursday[1] += np.array(correctedjitters)
-					thursday[2] += np.array(correctedlosses)
-					thucount += 1
-				elif dayofweek == 'Fri':
-					friday[0] += np.array(correctedpings)
-					friday[1] += np.array(correctedjitters)
-					friday[2] += np.array(correctedlosses)
-					fricount += 1
-				elif dayofweek == 'Sat':
-					saturday[0] += np.array(correctedpings)
-					saturday[1] += np.array(correctedjitters)
-					saturday[2] += np.array(correctedlosses)
-					satcount += 1
-				elif dayofweek == 'Sun':
-					sunday[0] += np.array(correctedpings)
-					sunday[1] += np.array(correctedjitters)
-					sunday[2] += np.array(correctedlosses)
-					suncount += 1
-
-				count += 1
-				index += 1
-
-		else:
-			count += 1
-
-	#  Calculate averages for each day of the week.
-	monaverage = monday/moncount
-	tueaverage = tuesday/tuecount
-	wedaverage = wednesday/wedcount
-	thuaverage = thursday/thucount
-	friaverage = friday/fricount
-	sataverage = saturday/satcount
-	sunaverage = sunday/suncount
-
-	#  Plot average week at this school site.
-
-	#  Stack weekends and weekdays for this school site.
-	stackedweekday = np.array((3,1440))
-	stackedweekend = np.array((3,1440))
-
-	stackedweekday = (monaverage+tueaverage+wedaverage+thuaverage+friaverage)/5
-	stackedweekend = (sataverage+sunaverage)+2
-	hours = np.linspace(0,24,num=1440)
-
-	#  Plot average weekday and weekend day at the school.
+def plotweekcomp(hours,stackedweekday,stackedweekend,school):
+	
 	fig = plt.figure()
 
 	plt.subplot(311)
@@ -553,29 +432,274 @@ def stackdays(datalist,indexlist,school,startdate,enddate,includesessionday=True
 
 	return
 
-def sortblackboxdata(datalist):
+def plotsessioncomp(hours,stackedsession,stackedweek,school):
 
-	schoollist = list()
-	
+	fig = plt.figure()
+
+	plt.subplot(311)
+	plt.plot(hours,stackedweek[0],color = 'orange')
+	plt.plot(hours,stackedsession[1],color = 'blue')
+	session = mpl.patches.Patch(color = 'blue',label = 'Average Session Day')
+	nosession = mpl.patches.Patch(color = 'orange',label = 'Average Non-Session Day')
+	plt.legend(handles=[session,nosession],prop={'size':10})
+	plt.axis([0,24,0,50])
+	plt.title('Average Ping Time on Session vs. Non-Session Days')
+	plt.xlabel('Hour of Day')
+	plt.ylabel('Average Ping Time (ms)')
+
+	plt.subplot(312)
+	plt.plot(hours,stackedweek[1],color = 'orange')
+	plt.plot(hours,stackedsession[1],color = 'blue')
+	session = mpl.patches.Patch(color = 'blue',label = 'Average Session Day')
+	nosession = mpl.patches.Patch(color = 'orange',label = 'Average Non-Session Day')
+	plt.legend(handles=[session,nosession],prop={'size':10})
+	plt.axis([0,24,0,50])
+	plt.title('Average Jitter on Session vs. Non-Session Days')
+	plt.xlabel('Hour of Day')
+	plt.ylabel('Jitter (ms)')
+
+	plt.subplot(313)
+	plt.plot(hours,stackedweek[2],color = 'orange')
+	plt.plot(hours,stackedsession[2],color = 'blue')
+	session = mpl.patches.Patch(color = 'blue',label = 'Average Session Day')
+	nosession = mpl.patches.Patch(color = 'orange',label = 'Average Non-Session Day')
+	plt.legend(handles=[session,nosession],prop={'size':10})
+	plt.axis([0,24,0,15])
+	plt.title('Average Packet Loss on Session vs. Non-Session Days')
+	plt.xlabel('Hour of Day')
+	plt.ylabel('Average Packet Loss (%)')
+
+	plt.suptitle('Session vs. Non-Session Weekday Network - '+school,fontsize=20)
+
+	fig.set_size_inches(10.5,18.5)
+
+	fig.savefig('SessionvsNoSession'+'_'+school)
+
+	fig.clf()
+	plt.close()
+
+	return
+
+
+#  Stack days of the week to create an 'average week' graph and metrics.
+def stackdays(datalist,sessiondatalist,school,startdate,enddate):
+
+	count = 0
+	index = 0
+	datetimelist = list()
+	pinglist = list()
+	jitterlist = list()
+	losslist = list()
+
+	#  Establish reftimes list.
+	i = 0
+	reftimes = list()
+	initialtime = dt.datetime(2015,1,1,0,0,0)
+	timestep = dt.timedelta(0,0,0,0,1,0)
+
+	while i < 1440:
+		refdatetime = initialtime + timestep*i
+		reftimes.append(refdatetime.time())
+		i += 1
+
+	#  Declare np.array objects for each day of the week.
+	monday = np.zeros((3,1440))
+	tuesday = np.zeros((3,1440))
+	wednesday = np.zeros((3,1440))
+	thursday = np.zeros((3,1440))
+	friday = np.zeros((3,1440))
+	saturday = np.zeros((3,1440))
+	sunday = np.zeros((3,1440))
+
+	#  Declare counts for each day of the week.
+	moncount = 0
+	tuecount = 0
+	wedcount = 0
+	thucount = 0
+	fricount = 0
+	satcount = 0
+	suncount = 0
+
 	for item in datalist:
-		locations = item.location
-		school = classtoschool[locations[0]]
-		schoollist.append(school)
+			
+		if item.date >= startdate and item.date <= enddate:
 
+			dayofweek = item.dayofweek
+			daytimes = item.times
+			daypings = item.pingtimes
+			dayjitters = item.jitters
+			daylosses = item.losses
+
+			#  Correct for skipped minutes
+			correctedpings, correctedjitters, correctedlosses = findtimes(reftimes,daytimes,daypings,dayjitters,daylosses)
+
+				#  Stack corrected values to the correct day of the week.
+			if dayofweek == 'Mon':
+				monday[0] += np.array(correctedpings)
+				monday[1] += np.array(correctedjitters)
+				monday[2] += np.array(correctedlosses)
+				moncount += 1
+			elif dayofweek == 'Tue':
+				tuesday[0] += np.array(correctedpings)
+				tuesday[1] += np.array(correctedjitters)
+				tuesday[2] += np.array(correctedlosses)
+				tuecount += 1
+			elif dayofweek == 'Wed':
+				wednesday[0] += np.array(correctedpings)
+				wednesday[1] += np.array(correctedjitters)
+				wednesday[2] += np.array(correctedlosses)
+				wedcount += 1
+			elif dayofweek == 'Thu':
+				thursday[0] += np.array(correctedpings)
+				thursday[1] += np.array(correctedjitters)
+				thursday[2] += np.array(correctedlosses)
+				thucount += 1
+			elif dayofweek == 'Fri':
+				friday[0] += np.array(correctedpings)
+				friday[1] += np.array(correctedjitters)
+				friday[2] += np.array(correctedlosses)
+				fricount += 1
+			elif dayofweek == 'Sat':
+				saturday[0] += np.array(correctedpings)
+				saturday[1] += np.array(correctedjitters)
+				saturday[2] += np.array(correctedlosses)
+				satcount += 1
+			elif dayofweek == 'Sun':
+				sunday[0] += np.array(correctedpings)
+				sunday[1] += np.array(correctedjitters)
+				sunday[2] += np.array(correctedlosses)
+				suncount += 1
+
+			count += 1
+
+		else:
+			count += 1
+
+	#  Calculate averages for each day of the week.
+	monaverage = monday/moncount
+	tueaverage = tuesday/tuecount
+	wedaverage = wednesday/wedcount
+	thuaverage = thursday/thucount
+	friaverage = friday/fricount
+	sataverage = saturday/satcount
+	sunaverage = sunday/suncount
+
+	#  Stack weekends and weekdays for this school site, then plot stacked results.
+	stackedweekday = np.array((3,1440))
+	stackedweekend = np.array((3,1440))
+
+	stackedweekday = (monaverage+tueaverage+wedaverage+thuaverage+friaverage)/5
+	stackedweekend = (sataverage+sunaverage)/2
+	hours = np.linspace(0,24,num=1440)
+
+	plotweekcomp(hours,stackedweekday,stackedweekend,school)
+
+	#  Pull out and compare non-session days to session days.  
+	sessiondaystr = blackboxschooltoday[school]
+
+	#  Find average session and non-session days.
+	if sessiondaystr == 'Mon':
+		sessionaverage = monaverage
+		nosessionaverage = (tueaverage+wedaverage+thuaverage+friaverage)/4
+	elif sessiondaystr == 'Tue':
+		sessionaverage = tueaverage
+		nosessionaverage = (monaverage+wedaverage+thuaverage+friaverage)/4
+	elif sessiondaystr == 'Wed':
+		sessionaverage = wedaverage
+		nosessionaverage = (monaverage+tueaverage+thuaverage+friaverage)/4
+	elif sessiondaystr == 'Thu':
+		sessionaverage = thuaverage
+		nosessionaverage = (monaverage+tueaverage+wedaverage+friaverage)/4
+
+	plotsessioncomp(hours,sessionaverage,nosessionaverage,school)
+
+	#  Pull out and compare session times to the same times on other days.
+
+
+	for item in sessiondatalist:
+
+		if item.date >= startdate and item.date <= enddate:
+			timelen = len(item.times)
+			locations = item.location
+
+			#  Find session data
+			itempings = item.pingtimes
+			itemjitters = item.jitters
+			itemlosses = item.losses
+
+			#  Loop over each class session associated with this blackbox session
+			for location in locations:
+				starttime = locationtostart[location]
+				endtime = locationtoend[location]
+
+				i = 0
+				sessionminutes = 0
+				nosessiontimes = list()
+				nosessionpings = list()
+				nosessionjitters = list()
+				nosessionlosses = list()
+
+				#  Pull same times from nosessionaverage list
+				while i < 1440:
+					if (reftimes[i] >= starttime) and (reftimes[i] <= endtime):
+						nosessiontimes.append(reftimes[i])
+						nosessionpings.append(nosessionaverage[0,i])
+						nosessionjitters.append(nosessionaverage[1,i])
+						nosessionlosses.append(nosessionaverage[2,i])
+					
+					i += 1
+
+				#  Calculate statistics for ping times.
+				itempingsaverage = np.mean(np.array(itempings))
+				itempingsstd = np.std(np.array(itempings))
+				nosessionpingsaverage = np.mean(np.array(nosessionpings))
+				nosessionpingsstd = np.std(np.array(nosessionpings))
+
+				print itempingsaverage,itempingsstd,nosessionpingsaverage,nosessionpingsstd
+
+				#  Calculate statistics for jitter.
+				itemjittersaverage = np.mean(np.array(itemjitters))
+				itemjittersstd = np.std(np.array(itemjitters))
+				nosessionjittersaverage = np.mean(np.array(nosessionjitters))
+				nosessionjittersstd = np.std(np.array(nosessionjitters))
+
+				print itemjittersaverage,itemjittersstd,nosessionjittersaverage,nosessionjittersstd
+
+				#  Calculate statistics for packet loss.
+				itemlossesaverage = np.mean(np.array(itemlosses))
+				itemlossesstd = np.std(np.array(itemlosses))
+				nosessionlossesaverage = np.mean(np.array(nosessionlosses))
+				nosesssionlossesstd = np.std(np.array(nosessionlosses))
+
+				print itemlossesaverage,itemlossesstd,nosessionlossesaverage,nosesssionlossesstd
+
+
+	return
+
+def sortblackboxdata(datalist,sessiondatalist):
+
+	schooldatalist = list()
 
 	for school in blackboxschoollist:
 
-		index = 0
-		indexlist = list()
+		schoolitemlist = list()
+		sessionslist = list()
 
 		for item in datalist:
-			if schoollist[index] == school:
-				indexlist.append(index)
-			index += 1
+			locations = item.location
+			itemschool = classtoschool[locations[0]]
+			if itemschool == school:
+				schoolitemlist.append(item)
 
-		if (indexlist != []):
-			graphdates(datalist,indexlist,school,dt.datetime(2015,3,18),dt.datetime(2015,3,24))
-			stackdays(datalist,indexlist,school,dt.date(2015,3,18),dt.date(2015,3,24))
+		for item in sessiondatalist:
+			itemschool = classtoschool[item.location[0]]
+			if itemschool == school:
+				sessionslist.append(item)
+
+
+		if (schoolitemlist != []):
+			graphdates(schoolitemlist,school,dt.datetime(2015,3,18),dt.datetime(2015,3,24))
+			stackdays(schoolitemlist,sessionslist,school,dt.date(2015,3,18),dt.date(2015,3,24))
 
 	return
 
@@ -616,12 +740,12 @@ def blackboxanalyze(datalist):
 		count = 0
 		for flag in item.session:
 			if flag == True:
-				location = item.location[0]
+				location = item.location[0]				#### FIX THIS!!!!!!#####
 				test = pullsessiondata(item,location)
 				sessiondatalist.append(test)
 		count += 1
 
 	#  Plot data for each site.
-	sortblackboxdata(datalist)
+	sortblackboxdata(datalist,sessiondatalist)
 
 	return sessiondatalist

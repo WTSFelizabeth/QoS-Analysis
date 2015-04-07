@@ -96,6 +96,12 @@ blackboxlocationlist = ['IBL_Thurs 9:50','IBL_Thurs 10:40','IBL_Thurs 11:30','IB
 #  List of blackbox schools.
 blackboxschoollist = ['IBL','Sierramont','SLHS','Testing']
 
+#  List of session days at blackbox schools.
+blackboxschooltoday = {'IBL':'Thu','Sierramont':'Tue','SLHS':'Thu','Testing':'Mon'}
+
+#  Blackbox days to leave out of analysis (i.e. spring break, etc).
+blackboxdaysout = {'IBL':[],'Sierramont':[],'SLHS':[],'Testing':[]}
+
 #  Overall ratings for technology and conversion to numerical scale.
 overallratings = {'Excellent':4,'Good':3,'Fair':2,'Poor':1}
 
