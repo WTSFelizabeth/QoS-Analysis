@@ -519,6 +519,10 @@ def stackdays(datalist,sessiondatalist,school,startdate,enddate):
 	satstandarddevs = np.zeros((3))
 	sunstandarddevs = np.zeros((3))
 
+	pingstack = np.zeros((100,1440))
+	jitterstack = np.zeros((100,1440))
+	lossstack = np.zeros((100,1440))
+
 	#  Declare counts for each day of the week.
 	moncount = 0
 	tuecount = 0
@@ -527,6 +531,8 @@ def stackdays(datalist,sessiondatalist,school,startdate,enddate):
 	fricount = 0
 	satcount = 0
 	suncount = 0
+
+	count = 0
 
 	for item in datalist:
 			
@@ -544,64 +550,82 @@ def stackdays(datalist,sessiondatalist,school,startdate,enddate):
 				#  Stack corrected values to the correct day of the week.
 			if dayofweek == 'Mon':
 				monday[0] += np.array(correctedpings)
+				pingstack[count] = np.array(correctedpings)
 				monday[1] += np.array(correctedjitters)
+				jitterstack[count] = np.array(correctedjitters)
 				monday[2] += np.array(correctedlosses)
+				lossstack = np.array(correctedlosses)
 				monstandarddevs[0] += np.std(monday[0])
 				monstandarddevs[1] += np.std(monday[1])
 				monstandarddevs[2] += np.std(monday[2])
 				moncount += 1
 			elif dayofweek == 'Tue':
 				tuesday[0] += np.array(correctedpings)
+				pingstack[count] = np.array(correctedpings)
 				tuesday[1] += np.array(correctedjitters)
+				jitterstack[count] = np.array(correctedjitters)
 				tuesday[2] += np.array(correctedlosses)
+				lossstack = np.array(correctedlosses)
 				tuestandarddevs[0] += np.std(tuesday[0])
 				tuestandarddevs[1] += np.std(tuesday[1])
 				tuestandarddevs[2] += np.std(tuesday[2])
 				tuecount += 1
 			elif dayofweek == 'Wed':
 				wednesday[0] += np.array(correctedpings)
+				pingstack[count] = np.array(correctedpings)
 				wednesday[1] += np.array(correctedjitters)
+				jitterstack[count] = np.array(correctedjitters)
 				wednesday[2] += np.array(correctedlosses)
+				lossstack = np.array(correctedlosses)
 				wedstandarddevs[0] += np.std(wednesday[0])
 				wedstandarddevs[1] += np.std(wednesday[1])
 				wedstandarddevs[2] += np.std(wednesday[2])
 				wedcount += 1
 			elif dayofweek == 'Thu':
 				thursday[0] += np.array(correctedpings)
+				pingstack[count] = np.array(correctedpings)
 				thursday[1] += np.array(correctedjitters)
+				jitterstack[count] = np.array(correctedjitters)
 				thursday[2] += np.array(correctedlosses)
+				lossstack = np.array(correctedlosses)
 				thustandarddevs[0] += np.std(thursday[0])
 				thustandarddevs[1] += np.std(thursday[1])
 				thustandarddevs[2] += np.std(thursday[2])
 				thucount += 1
 			elif dayofweek == 'Fri':
 				friday[0] += np.array(correctedpings)
+				pingstack[count] = np.array(correctedpings)
 				friday[1] += np.array(correctedjitters)
+				jitterstack[count] = np.array(correctedjitters)
 				friday[2] += np.array(correctedlosses)
+				lossstack = np.array(correctedlosses)
 				fristandarddevs[0] += np.std(friday[0])
 				fristandarddevs[1] += np.std(friday[1])
 				fristandarddevs[2] += np.std(friday[2])
 				fricount += 1
 			elif dayofweek == 'Sat':
 				saturday[0] += np.array(correctedpings)
+				pingstack[count] = np.array(correctedpings)
 				saturday[1] += np.array(correctedjitters)
+				jitterstack[count] = np.array(correctedjitters)
 				saturday[2] += np.array(correctedlosses)
+				lossstack = np.array(correctedlosses)
 				satstandarddevs[0] += np.std(saturday[0])
 				satstandarddevs[1] += np.std(saturday[1])
 				satstandarddevs[2] += np.std(saturday[2])
 				satcount += 1
 			elif dayofweek == 'Sun':
 				sunday[0] += np.array(correctedpings)
+				pingstack[count] = np.array(correctedpings)
 				sunday[1] += np.array(correctedjitters)
+				jitterstack[count] = np.array(correctedjitters)
 				sunday[2] += np.array(correctedlosses)
+				lossstack = np.array(correctedlosses)
 				sunstandarddevs[0] += np.std(sunday[0])
 				sunstandarddevs[1] += np.std(sunday[1])
 				sunstandarddevs[2] += np.std(sunday[2])
 				suncount += 1
 
-			count += 1
-
-		else:
 			count += 1
 
 	#  Calculate averages for each day of the week.
@@ -644,7 +668,6 @@ def stackdays(datalist,sessiondatalist,school,startdate,enddate):
 		sessionaverage = monaverage
 		sesssionstd = monstandarddevs
 		nosessionaverage = (tueaverage+wedaverage+thuaverage+friaverage)/4
-		nosessionstd = (tuestandarddevs+wedstandarddevs+thustandarddevs+fristandarddevs)/4
 	elif sessiondaystr == 'Tue':
 		sessionaverage = tueaverage
 		sessionstd = tuestandarddevs
@@ -654,12 +677,10 @@ def stackdays(datalist,sessiondatalist,school,startdate,enddate):
 		sessionaverage = wedaverage
 		sessionstd = wedstandarddevs
 		nosessionaverage = (monaverage+tueaverage+thuaverage+friaverage)/4
-		nosessionstd = (monstandarddevs+tuestandarddevs+thustandarddevs+fristandarddevs)/4
 	elif sessiondaystr == 'Thu':
 		sessionaverage = thuaverage
 		sessionstd = thustandarddevs
 		nosessionaverage = (monaverage+tueaverage+wedaverage+friaverage)/4
-		nosessionstd = (monstandarddevs+tuestandarddevs+wedstandarddevs+fristandarddevs)/4
 
 	plotsessioncomp(hours,sessionaverage,nosessionaverage,school)
 
@@ -676,6 +697,8 @@ def stackdays(datalist,sessiondatalist,school,startdate,enddate):
 			itempings = item.pingtimes
 			itemjitters = item.jitters
 			itemlosses = item.losses
+			itemdayofweek = item.dayofweek
+			print itemdayofweek
 
 			#  Loop over each class session associated with this blackbox session
 			for location in locations:
@@ -689,39 +712,36 @@ def stackdays(datalist,sessiondatalist,school,startdate,enddate):
 				nosessionjitters = list()
 				nosessionlosses = list()
 
-				#  Pull same times from nosessionaverage list
+				#  Pull same times from nosessionaverage list and standard deviations
 				while i < 1440:
 					if (reftimes[i] >= starttime) and (reftimes[i] <= endtime):
 						nosessiontimes.append(reftimes[i])
 						nosessionpings.append(nosessionaverage[0,i])
 						nosessionjitters.append(nosessionaverage[1,i])
 						nosessionlosses.append(nosessionaverage[2,i])
-					
+
 					i += 1
 
 				#  Calculate statistics for ping times.
 				itempingsaverage = np.mean(np.array(itempings))
 				itempingsstd = np.std(np.array(itempings))
 				nosessionpingsaverage = np.mean(np.array(nosessionpings))
-				nosessionpingsstd = np.std(np.array(nosessionpings))
 
-				print itempingsaverage,itempingsstd,nosessionpingsaverage,nosessionpingsstd
+				print itempingsaverage,itempingsstd,nosessionpingsaverage
 
 				#  Calculate statistics for jitter.
 				itemjittersaverage = np.mean(np.array(itemjitters))
 				itemjittersstd = np.std(np.array(itemjitters))
 				nosessionjittersaverage = np.mean(np.array(nosessionjitters))
-				nosessionjittersstd = np.std(np.array(nosessionjitters))
 
-				print itemjittersaverage,itemjittersstd,nosessionjittersaverage,nosessionjittersstd
+				print itemjittersaverage,itemjittersstd,nosessionjittersaverage
 
 				#  Calculate statistics for packet loss.
 				itemlossesaverage = np.mean(np.array(itemlosses))
 				itemlossesstd = np.std(np.array(itemlosses))
 				nosessionlossesaverage = np.mean(np.array(nosessionlosses))
-				nosesssionlossesstd = np.std(np.array(nosessionlosses))
 
-				print itemlossesaverage,itemlossesstd,nosessionlossesaverage,nosesssionlossesstd
+				print itemlossesaverage,itemlossesstd,nosessionlossesaverage
 
 
 	return
