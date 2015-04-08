@@ -712,7 +712,7 @@ def stackdays(datalist,sessiondatalist,school,startdate,enddate):
 				nosessionjitters = list()
 				nosessionlosses = list()
 
-				#  Pull same times from nosessionaverage list and standard deviations
+				#  Pull same times from nosessionaverage list
 				while i < 1440:
 					if (reftimes[i] >= starttime) and (reftimes[i] <= endtime):
 						nosessiontimes.append(reftimes[i])
@@ -722,12 +722,46 @@ def stackdays(datalist,sessiondatalist,school,startdate,enddate):
 
 					i += 1
 
+				#  Begin calculation of reference standard deviations
+				refpingstdevtot = 0
+				refjitterstdevtot = 0
+				reflossstdevtot = 0
+				refcount = 0
+
+				for fulldata in datalist:
+					#  Get day of week
+					fulldatadayofweek = fulldata.dayofweek
+					print fulldatadayofweek
+
+					#  Check to make sure this isn't a session day or a weekend.
+					if (fulldatadayofweek != itemdayofweek) and (fulldatadayofweek != 'Sun') and (fulldatadayofweek != 'Sat'):
+						
+						fulldatatemppinglist = list()
+
+						#  Pull out analogous session times.
+						i = 0
+						while i < 1440:
+							if (reftimes[i] >= starttime) and (reftimes[i] <= endtime):
+								fulldatatemppinglist.append(fulldata.pingtimes[i])
+							i += 1
+
+						#  Calculate standard deviation over reference ping times.
+						if fulldatatemppinglist != []:
+							temppingstdev = np.std(np.array(fulldatatemppinglist))
+							refpingstdevtot += temppingstdev
+							refcount += 1
+
+				#  Finish calculation of reference standard deviations.
+				refpingstdev = refpingstdevtot/refcount
+				print refpingstdev
+
+
 				#  Calculate statistics for ping times.
 				itempingsaverage = np.mean(np.array(itempings))
 				itempingsstd = np.std(np.array(itempings))
 				nosessionpingsaverage = np.mean(np.array(nosessionpings))
 
-				print itempingsaverage,itempingsstd,nosessionpingsaverage
+				print itempingsaverage,itempingsstd,nosessionpingsaverage,refpingstdev
 
 				#  Calculate statistics for jitter.
 				itemjittersaverage = np.mean(np.array(itemjitters))
