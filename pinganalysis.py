@@ -713,7 +713,7 @@ def stackdays(datalist,sessiondatalist,school,startdate,enddate):
 				nosessionjitters = list()
 				nosessionlosses = list()
 
-				#  Pull same times from nosessionaverage list and standard deviations
+				#  Pull same times from nosessionaverage list
 				while i < 1440:
 					if (reftimes[i] >= starttime) and (reftimes[i] <= endtime):
 						nosessiontimes.append(reftimes[i])
@@ -723,26 +723,69 @@ def stackdays(datalist,sessiondatalist,school,startdate,enddate):
 
 					i += 1
 
+				#  Begin calculation of reference standard deviations
+				refpingstdevtot = 0
+				refjitterstdevtot = 0
+				reflossstdevtot = 0
+				refcount = 0
+
+				for fulldata in datalist:
+					#  Get day of week
+					fulldatadayofweek = fulldata.dayofweek
+					print fulldatadayofweek
+
+					#  Check to make sure this isn't a session day or a weekend.
+					if (fulldatadayofweek != itemdayofweek) and (fulldatadayofweek != 'Sun') and (fulldatadayofweek != 'Sat'):
+						
+						fulldatatemppinglist = list()
+						fulldatatempjitterlist = list()
+						fulldatatemplosslist = list()
+
+						#  Pull out analogous session times.
+						i = 0
+						while i < 1440:
+							if (reftimes[i] >= starttime) and (reftimes[i] <= endtime):
+								fulldatatemppinglist.append(fulldata.pingtimes[i])
+								fulldatatempjitterlist.append(fulldata.jitters[i])
+								fulldatatemplosslist.append(fulldata.losses[i])
+							i += 1
+
+						#  Calculate standard deviation over reference ping times.
+						if fulldatatemppinglist != []:
+							temppingstdev = np.std(np.array(fulldatatemppinglist))
+							tempjitterstdev = np.std(np.array(fulldatatempjitterlist))
+							templossstdev = np.std(np.array(fulldatatemplosslist))
+							refpingstdevtot += temppingstdev
+							refjitterstdevtot += tempjitterstdev
+							reflossstdevtot += templossstdev
+							refcount += 1
+
+				#  Finish calculation of reference standard deviations.
+				refpingstdev = refpingstdevtot/refcount
+				refjitterstdev = refjitterstdevtot/refcount
+				reflossstdev = reflossstdevtot/refcount
+
+
 				#  Calculate statistics for ping times.
 				itempingsaverage = np.mean(np.array(itempings))
 				itempingsstd = np.std(np.array(itempings))
 				nosessionpingsaverage = np.mean(np.array(nosessionpings))
 
-				print itempingsaverage,itempingsstd,nosessionpingsaverage
+				print itempingsaverage,itempingsstd,nosessionpingsaverage,refpingstdev
 
 				#  Calculate statistics for jitter.
 				itemjittersaverage = np.mean(np.array(itemjitters))
 				itemjittersstd = np.std(np.array(itemjitters))
 				nosessionjittersaverage = np.mean(np.array(nosessionjitters))
 
-				print itemjittersaverage,itemjittersstd,nosessionjittersaverage
+				print itemjittersaverage,itemjittersstd,nosessionjittersaverage,refjitterstdev
 
 				#  Calculate statistics for packet loss.
 				itemlossesaverage = np.mean(np.array(itemlosses))
 				itemlossesstd = np.std(np.array(itemlosses))
 				nosessionlossesaverage = np.mean(np.array(nosessionlosses))
 
-				print itemlossesaverage,itemlossesstd,nosessionlossesaverage
+				print itemlossesaverage,itemlossesstd,nosessionlossesaverage,reflossstdev
 
 
 	return
