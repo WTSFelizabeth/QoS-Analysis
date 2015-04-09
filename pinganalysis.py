@@ -737,23 +737,32 @@ def stackdays(datalist,sessiondatalist,school,startdate,enddate):
 					if (fulldatadayofweek != itemdayofweek) and (fulldatadayofweek != 'Sun') and (fulldatadayofweek != 'Sat'):
 						
 						fulldatatemppinglist = list()
+						fulldatatempjitterlist = list()
+						fulldatatemplosslist = list()
 
 						#  Pull out analogous session times.
 						i = 0
 						while i < 1440:
 							if (reftimes[i] >= starttime) and (reftimes[i] <= endtime):
 								fulldatatemppinglist.append(fulldata.pingtimes[i])
+								fulldatatempjitterlist.append(fulldata.jitters[i])
+								fulldatatemplosslist.append(fulldata.losses[i])
 							i += 1
 
 						#  Calculate standard deviation over reference ping times.
 						if fulldatatemppinglist != []:
 							temppingstdev = np.std(np.array(fulldatatemppinglist))
+							tempjitterstdev = np.std(np.array(fulldatatempjitterlist))
+							templossstdev = np.std(np.array(fulldatatemplosslist))
 							refpingstdevtot += temppingstdev
+							refjitterstdevtot += tempjitterstdev
+							reflossstdevtot += templossstdev
 							refcount += 1
 
 				#  Finish calculation of reference standard deviations.
 				refpingstdev = refpingstdevtot/refcount
-				print refpingstdev
+				refjitterstdev = refjitterstdevtot/refcount
+				reflossstdev = reflossstdevtot/refcount
 
 
 				#  Calculate statistics for ping times.
@@ -768,14 +777,14 @@ def stackdays(datalist,sessiondatalist,school,startdate,enddate):
 				itemjittersstd = np.std(np.array(itemjitters))
 				nosessionjittersaverage = np.mean(np.array(nosessionjitters))
 
-				print itemjittersaverage,itemjittersstd,nosessionjittersaverage
+				print itemjittersaverage,itemjittersstd,nosessionjittersaverage,refjitterstdev
 
 				#  Calculate statistics for packet loss.
 				itemlossesaverage = np.mean(np.array(itemlosses))
 				itemlossesstd = np.std(np.array(itemlosses))
 				nosessionlossesaverage = np.mean(np.array(nosessionlosses))
 
-				print itemlossesaverage,itemlossesstd,nosessionlossesaverage
+				print itemlossesaverage,itemlossesstd,nosessionlossesaverage,reflossstdev
 
 
 	return
