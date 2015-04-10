@@ -1,8 +1,17 @@
+#  Rename survey file.
+mv surveys.txt fullsurveys.txt
+
 #  Remove spaces in file names, replace with underscores.
-for file in /Users/elizabeth/Documents/Analysis/pinglogs/*; do mv "$file" "`echo $file | sed -e 's, ,_,g'`"; done
+for file in /Users/elizabeth/Documents/Analysis/pinglogs/*[0-9]; do mv "$file" "`echo $file | sed -e 's, ,_,g'`"; done
 
 #  Remove pinglogs with error phrases.
 grep -rnwl '/Users/elizabeth/Documents/Analysis/pinglogs' -e "ERROR" | xargs rm
+
+#  Find all survey lines with AC (Adobe Connect) , pipe to file.
+grep -r '/Users/elizabeth/Documents/Analysis/fullsurveys.txt' -e "ACPilot" > ACPilotsurveys.txt
+
+#  Remove all AC Pilot survey results from surveys.txt.
+grep -v '/Users/elizabeth/Documents/Analysis/fullsurveys.txt' -e "ACPilot" > surveys.txt
 
 #  Remove pinglogs from before 10/1/14.
 rm -f /Users/elizabeth/Documents/Analysis/pinglogs/Cabrillo_9-5-2014_9.30
@@ -35,6 +44,14 @@ temp2=$(echo "$temp" | rev | cut -c 2- | rev)
 echo 'pingfiles = ['$temp2']' > pingfilelist.py
 
 #  Pipe blackbox files to a list for use in the main program
-temp=$(find /Users/elizabeth/Documents/Analysis/pinglogs/testbox/*/* | sed 's/^/"/g' | sed 's/$/"/g' | tr '\n' ',')
+temp=$(find /Users/elizabeth/Documents/Analysis/pinglogs/pilot-ibl/*/*/* | sed 's/^/"/g' | sed 's/$/"/g' | tr '\n' ',')
 temp2=$(echo "$temp" | rev | cut -c 2- | rev)
-echo 'blackboxpingfiles = ['$temp2']' > testboxfilelist.py
+echo 'blackboxpingfiles = ['$temp2']' > iblblackboxfilelist.py
+
+temp=$(find /Users/elizabeth/Documents/Analysis/pinglogs/pilot-slhs/*/*/* | sed 's/^/"/g' | sed 's/$/"/g' | tr '\n' ',')
+temp2=$(echo "$temp" | rev | cut -c 2- | rev)
+echo 'blackboxpingfiles = ['$temp2']' > slhsblackboxfilelist.py
+
+temp=$(find /Users/elizabeth/Documents/Analysis/pinglogs/pilot-sierramont/*/*/* | sed 's/^/"/g' | sed 's/$/"/g' | tr '\n' ',')
+temp2=$(echo "$temp" | rev | cut -c 2- | rev)
+echo 'blackboxpingfiles = ['$temp2']' > sierramontblackboxfilelist.py
