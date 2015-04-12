@@ -12,6 +12,7 @@ import scipy as sp
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import csv
+import re
 import datetime as dt
 
 from dictionaries import months, numtodays, classtoday, locationtostart, locationtoend, blackboxlocationlist, classtoschool, blackboxschoollist
@@ -151,22 +152,31 @@ def pingread(file):
 			#  Read each line into the relevant lists.	
 			else:
 
-				#  Parse the row to pull out the date/time stamp
-				timestr = line[0]
-				time = timefind(timestr)
-				times.append(time)
+				bandwidthre = re.compile('bandwidth*')
+				matches = bandwidthre.search(line[2])
 
-				#  Parse the row to pull out the ping time
-				pingstr = line[2]
-				ping = float(pingstr)
-				pingtimes.append(ping)
+				#  Deal with exceptions where Sierramont files have doubled bandwidth line
+				if matches != None:
+					count += 1
 
-				#  Parse the row to pull out the jitter
-				jitterstr = line[3]
-				jitter = float(jitterstr)
-				jitters.append(jitter)
+				else:
 
-				count += 1
+					#  Parse the row to pull out the date/time stamp
+					timestr = line[0]
+					time = timefind(timestr)
+					times.append(time)
+
+					#  Parse the row to pull out the ping time
+					pingstr = line[2]
+					ping = float(pingstr)
+					pingtimes.append(ping)
+
+					#  Parse the row to pull out the jitter
+					jitterstr = line[3]
+					jitter = float(jitterstr)
+					jitters.append(jitter)
+
+					count += 1
 
 	#  Return all the relevant values.
 	return date, location, bandwidth, times, pingtimes, jitters
@@ -181,6 +191,7 @@ def pingimport(filelist):
 
 		#  Call pingread to read in the ping file.
 		filename = entry
+		print filename
 		date, location, bandwidth, times, pingtimes, jitters = pingread(filename)
 
 		#  Create a PingData object, add to the list.
