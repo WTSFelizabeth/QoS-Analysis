@@ -44,14 +44,19 @@ temp2=$(echo "$temp" | rev | cut -c 2- | rev)
 echo 'pingfiles = ['$temp2']' > pingfilelist.py
 
 #  Pipe blackbox files to a list for use in the main program
+
+temp=$(find /Users/elizabeth/Documents/Analysis/pinglogs/testbox/*/*/* | sed 's/^/"/g' | sed 's/$/"/g' | tr '\n' ',')
+temp2=$(echo "$temp" | rev | cut -c 2- | rev)
+echo 'testblackboxpingfiles = ['$temp2']' > testboxfilelist.py
+
 temp=$(find /Users/elizabeth/Documents/Analysis/pinglogs/pilot-ibl/*/*/* | sed 's/^/"/g' | sed 's/$/"/g' | tr '\n' ',')
 temp2=$(echo "$temp" | rev | cut -c 2- | rev)
-echo 'blackboxpingfiles = ['$temp2']' > iblblackboxfilelist.py
+echo 'iblblackboxpingfiles = ['$temp2']' > iblblackboxfilelist.py
 
 temp=$(find /Users/elizabeth/Documents/Analysis/pinglogs/pilot-slhs/*/*/* | sed 's/^/"/g' | sed 's/$/"/g' | tr '\n' ',')
 temp2=$(echo "$temp" | rev | cut -c 2- | rev)
-echo 'blackboxpingfiles = ['$temp2']' > slhsblackboxfilelist.py
+echo 'slhsblackboxpingfiles = ['$temp2']' > slhsblackboxfilelist.py
 
 temp=$(find /Users/elizabeth/Documents/Analysis/pinglogs/pilot-sierramont/*/*/* | sed 's/^/"/g' | sed 's/$/"/g' | tr '\n' ',')
 temp2=$(echo "$temp" | rev | cut -c 2- | rev)
-echo 'blackboxpingfiles = ['$temp2']' > sierramontblackboxfilelist.py
+echo 'sierramontblackboxpingfiles = ['$temp2']' > sierramontblackboxfilelist.py

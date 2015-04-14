@@ -89,19 +89,6 @@ classtonetwork = {'Cabrillo':'Testing','Castlemont Tue 9:40':'wired','Castlemont
 #  List of schools.
 schoollist = ['Cabrillo','Castlemont','Columbia','IBL','Horn','Irving','Morrill','Nimitz','Overfelt','Piedmont','RL Turner','Sierramont','SLHS','Testing']
 
-#  List of blackbox locations.
-blackboxlocationlist = ['IBL_Thurs 9:50','IBL_Thurs 10:40','IBL_Thurs 11:30','IBL_Thurs 2:20','Sierramont Tue 10','Sierramont Tue 12',
-'SLHS Thurs 12','SLHS Thurs 1','Testing']
-
-#  List of blackbox schools.
-blackboxschoollist = ['IBL','Sierramont','SLHS','Testing']
-
-#  List of session days at blackbox schools.
-blackboxschooltoday = {'IBL':'Thu','Sierramont':'Tue','SLHS':'Thu','Testing':'Mon'}
-
-#  Blackbox days to leave out of analysis (i.e. spring break, etc).
-blackboxdaysout = {'IBL':[],'Sierramont':[],'SLHS':[],'Testing':[]}
-
 #  Overall ratings for technology and conversion to numerical scale.
 overallratings = {'Excellent':4,'Good':3,'Fair':2,'Poor':1}
 

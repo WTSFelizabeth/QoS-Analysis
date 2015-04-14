@@ -20,15 +20,24 @@ from sessionanalysis import *
 
 from pingfilelist import *
 from testboxfilelist import *
+from iblblackboxfilelist import *
+from slhsblackboxfilelist import *
+from sierramontblackboxfilelist import *
 
 
 #import all the ping data (required:  list of files)
 pinglist = pingimport(pingfiles)
-blackboxpinglist = blackboximport(blackboxpingfiles)
-blackboxsessionlist = blackboxanalyze(blackboxpinglist)
+
+#  analyze blackbox data
+testblackboxpinglist = blackboximport(testblackboxpingfiles)
+testblackboxsessionlist = blackboxanalyze(testblackboxpinglist)
+
+iblblackboxpinglist = blackboximport(iblblackboxpingfiles)
+print iblblackboxpinglist
+iblblackboxsessionlist = blackboxanalyze(iblblackboxpinglist)
 
 #import the surveys
 classsurveylist = surveycontroller('surveys.txt')
 
 #  Feed the survey and class ping data to the session analysis module.
-sessionanalysis(classsurveylist,pinglist,blackboxsessionlist)
+sessionanalysis(classsurveylist,pinglist,testblackboxsessionlist)

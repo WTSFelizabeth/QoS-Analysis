@@ -479,7 +479,6 @@ def surveyimport(file):
 
 	#  Create a list for each data field in the survey.
 	count = 0
-	print count
 	dates = list()
 	rooms = list()
 	usernames = list()

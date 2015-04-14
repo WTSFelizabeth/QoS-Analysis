@@ -147,14 +147,14 @@ def sessiongraph(sessionObject, pingObjects, blackboxObjects):
 	ind = np.array([0.5,1.5,2.5,3.5])
 	width = 0.65
 
-	fig = plt.figure()
+	"""fig = plt.figure()
 
 	plt.subplot(221)
 	plt.bar(ind,overallcount,width)
 	plt.xticks(ind+width/2., ('Excellent', 'Good', 'Fair', 'Poor'))
 	plt.axis([0,5,0,1])
 	plt.title('Overall Survey Results')
-	plt.ylabel('Proportion of Survey Respondents')
+	plt.ylabel('Proportion of Survey Respondents')"""
 
 	ind = np.array([0.5,1.5,2.5,3.5,4.5,5.5])
 	hearingcount, delaycount, understandingcount, cuttingcount, videocount, whiteboardcount = sessionObject.countProblems()
@@ -164,7 +164,7 @@ def sessiongraph(sessionObject, pingObjects, blackboxObjects):
 	mediumlist = list()
 	biglist = list()
 
-	plt.subplot(222)
+	"""plt.subplot(222)
 	littlelist.extend((hearingcount[1],delaycount[1],understandingcount[1],cuttingcount[1],videocount[1],whiteboardcount[1]))
 	p1 = plt.bar(ind,littlelist,width,color = 'yellow')
 	mediumlist.extend((hearingcount[2],delaycount[2],understandingcount[2],cuttingcount[2],videocount[2],whiteboardcount[2]))
@@ -204,7 +204,7 @@ def sessiongraph(sessionObject, pingObjects, blackboxObjects):
 	fig.savefig(location+'_'+date)
 	fig.clf()
 
-	plt.close()
+	plt.close()"""
 
 	return location,date,number,overallcount,hearingcount,delaycount,understandingcount,cuttingcount,videocount,whiteboardcount,pings,jitters,bandwidth,bpings,bjitters,blosses
 

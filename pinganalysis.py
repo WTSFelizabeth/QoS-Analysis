@@ -15,11 +15,9 @@ import csv
 import re
 import datetime as dt
 
-from dictionaries import months, numtodays, classtoday, locationtostart, locationtoend, blackboxlocationlist, classtoschool, blackboxschoollist
-from dictionaries import blackboxschooltoday
+from dictionaries import months, numtodays, classtoday, locationtostart, locationtoend, classtoschool
+from blackboxdictionaries import *
 from pingdata import PingData, BlackboxData
-
-
 
 #  Checks for errors in a line of the incoming ping file.  Will be implemented later.
 def errorchecks():
@@ -116,7 +114,7 @@ def timefind(datetimestr,typeflag=True):
 #  Reads in the data from a single ping log, formats for creating the PingData object.
 def pingread(file):
 
-	#  add the path to the file name  ##CHANGE THIS###
+	#  add the path to the file name
 	filename = file
 
 	#  initialize necessary lists and variables
@@ -191,7 +189,6 @@ def pingimport(filelist):
 
 		#  Call pingread to read in the ping file.
 		filename = entry
-		print filename
 		date, location, bandwidth, times, pingtimes, jitters = pingread(filename)
 
 		#  Create a PingData object, add to the list.
@@ -216,26 +213,28 @@ def blackboxread(file):
 	session = list()
 
 	#  Determine the date.
-	year = 2015
 	
 	daysplit = filename.split('/')
-	daysplit2 = daysplit[8]
+	daysplit2 = daysplit[9]
 	daysplit2 = daysplit2.split('.')
 	daystr = daysplit2[0]
 	day = int(daystr)
 
-	monthstr = daysplit[7]
+	monthstr = daysplit[8]
 	month = months[monthstr]
+
+	yearstr = daysplit[7]
+	year = int(yearstr)
 
 	#  Find the day of the week.
 	date = dt.date(year,month,day)
 	dayofweekint = date.weekday()
 	dayofweek = numtodays[dayofweekint]
 
-
-	#  Determine the location(s) ### Will need to be changed for non-test data ###
-	location = list()
-	location.append('Testing')
+	#  Determine the location(s)
+	print daysplit[6]
+	location = blackboxlocationconvert[daysplit[6]]
+	print location
 
 	#  open the ping data file
 	with open(filename, 'rb') as csvfile:
@@ -709,7 +708,6 @@ def stackdays(datalist,sessiondatalist,school,startdate,enddate):
 			itemjitters = item.jitters
 			itemlosses = item.losses
 			itemdayofweek = item.dayofweek
-			print itemdayofweek
 
 			#  Loop over each class session associated with this blackbox session
 			for location in locations:
@@ -742,7 +740,6 @@ def stackdays(datalist,sessiondatalist,school,startdate,enddate):
 				for fulldata in datalist:
 					#  Get day of week
 					fulldatadayofweek = fulldata.dayofweek
-					print fulldatadayofweek
 
 					#  Check to make sure this isn't a session day or a weekend.
 					if (fulldatadayofweek != itemdayofweek) and (fulldatadayofweek != 'Sun') and (fulldatadayofweek != 'Sat'):
@@ -864,9 +861,9 @@ def blackboxanalyze(datalist):
 		count = 0
 		for flag in item.session:
 			if flag == True:
-				location = item.location[0]				#### FIX THIS!!!!!!#####
-				test = pullsessiondata(item,location)
-				sessiondatalist.append(test)
+				for location in item.location:
+					test = pullsessiondata(item,location)
+					sessiondatalist.append(test)
 		count += 1
 
 	#  Plot data for each site.
