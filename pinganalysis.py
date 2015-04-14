@@ -559,9 +559,17 @@ def stackdays(datalist,sessiondatalist,school,startdate,enddate):
 
 	count = 0
 
+
 	for item in datalist:
+
+		excludedlist = blackboxdaysout[school]
+		excluded = False
+
+		for excludeddate in excludedlist:
+			if item.date == excludeddate.date():
+				excluded = True
 			
-		if item.date >= startdate.date() and item.date <= enddate.date():
+		if item.date >= startdate.date() and item.date <= enddate.date() and excluded == False:
 
 			dayofweek = item.dayofweek
 			daytimes = item.times
@@ -711,7 +719,15 @@ def stackdays(datalist,sessiondatalist,school,startdate,enddate):
 
 	for item in sessiondatalist:
 
-		if item.date >= startdate.date() and item.date <= enddate.date():
+		excludedlist = blackboxdaysout[school]
+		excluded = False
+
+		for excludeddate in excludedlist:
+			if item.date == excludeddate.date():
+				excluded = True
+
+
+		if item.date >= startdate.date() and item.date <= enddate.date() and excluded == False:
 			timelen = len(item.times)
 			locations = item.location
 
@@ -753,14 +769,21 @@ def stackdays(datalist,sessiondatalist,school,startdate,enddate):
 					#  Get day of week
 					fulldatadayofweek = fulldata.dayofweek
 
+					excludedlist2 = blackboxdaysout[school]
+					excluded2 = False
+
+					for excludeddate2 in excludedlist2:
+						if fulldata.date == excludeddate2.date():
+							excluded2 = True
+
 					#  Check to make sure this isn't a session day or a weekend.
-					if (fulldatadayofweek != itemdayofweek) and (fulldatadayofweek != 'Sun') and (fulldatadayofweek != 'Sat'):
+					if (fulldatadayofweek != itemdayofweek) and (fulldatadayofweek != 'Sun') and (fulldatadayofweek != 'Sat') and excluded2 == False:
 						
+						print fulldata.date
+
 						fulldatatemppinglist = list()
 						fulldatatempjitterlist = list()
 						fulldatatemplosslist = list()
-
-						print fulldatadayofweek
 
 						#  Pull out analogous session times.
 						i = 0
@@ -825,6 +848,8 @@ def sortblackboxdata(datalist,sessiondatalist):
 			itemschool = classtoschool[locations[0]]
 			startdategraph = (blackboxstartandendforgraph[itemschool])[0]
 			enddategraph = (blackboxstartandendforgraph[itemschool])[1]
+			startdateanalysis = (blackboxstartandendforanalysis[itemschool])[0]
+			enddateanalysis = (blackboxstartandendforanalysis[itemschool])[1]
 			if itemschool == school:
 				schoolitemlist.append(item)
 
@@ -836,7 +861,7 @@ def sortblackboxdata(datalist,sessiondatalist):
 
 		if (schoolitemlist != []):
 			graphdates(schoolitemlist,school,startdategraph,enddategraph)
-			stackdays(schoolitemlist,sessionslist,school,startdategraph,enddategraph)  ##FIX START AND END##
+			stackdays(schoolitemlist,sessionslist,school,startdateanalysis,enddateanalysis)  ##FIX START AND END##
 
 	return
 
