@@ -33,8 +33,13 @@ testblackboxpinglist = blackboximport(testblackboxpingfiles)
 testblackboxsessionlist = blackboxanalyze(testblackboxpinglist)
 
 iblblackboxpinglist = blackboximport(iblblackboxpingfiles)
-print iblblackboxpinglist
 iblblackboxsessionlist = blackboxanalyze(iblblackboxpinglist)
+
+sierramontblackboxpinglist = blackboximport(sierramontblackboxpingfiles)
+sierramontblackboxsessionlist = blackboxanalyze(sierramontblackboxpinglist)
+
+slhsblackboxpinglist = blackboximport(slhsblackboxpingfiles)
+slhsblackboxsessionlist = blackboxanalyze(slhsblackboxpinglist)
 
 #import the surveys
 classsurveylist = surveycontroller('surveys.txt')

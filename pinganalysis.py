@@ -233,9 +233,7 @@ def blackboxread(file):
 	dayofweek = numtodays[dayofweekint]
 
 	#  Determine the location(s)
-	print daysplit[6]
 	location = blackboxlocationconvert[daysplit[6]]
-	print location
 
 	#  open the ping data file
 	with open(filename, 'rb') as csvfile:
@@ -415,7 +413,7 @@ def plotweekcomp(hours,stackedweekday,stackedweekend,school):
 
 	plt.subplot(311)
 	plt.plot(hours,stackedweekend[0],color = 'orange')
-	plt.plot(hours,stackedweekday[1],color = 'blue')
+	plt.plot(hours,stackedweekday[0],color = 'blue')
 	weekday = mpl.patches.Patch(color = 'blue',label = 'Average Weekday')
 	weekend = mpl.patches.Patch(color = 'orange',label = 'Average Weekend')
 	plt.legend(handles=[weekday,weekend],prop={'size':10})
@@ -463,7 +461,7 @@ def plotsessioncomp(hours,stackedsession,stackedweek,school):
 
 	plt.subplot(311)
 	plt.plot(hours,stackedweek[0],color = 'orange')
-	plt.plot(hours,stackedsession[1],color = 'blue')
+	plt.plot(hours,stackedsession[0],color = 'blue')
 	session = mpl.patches.Patch(color = 'blue',label = 'Average Session Day')
 	nosession = mpl.patches.Patch(color = 'orange',label = 'Average Non-Session Day')
 	plt.legend(handles=[session,nosession],prop={'size':10})
@@ -668,6 +666,7 @@ def stackdays(datalist,sessiondatalist,school,startdate,enddate):
 	sataverage = saturday/satcount
 	sunaverage = sunday/suncount
 
+
 	#  Calculate averages standard deviations for each day of the week.
 	monstandarddevs = monstandarddevs/moncount
 	tuestandarddevs = tuestandarddevs/tuecount
@@ -725,6 +724,7 @@ def stackdays(datalist,sessiondatalist,school,startdate,enddate):
 
 		for excludeddate in excludedlist:
 			if item.date == excludeddate.date():
+				print True
 				excluded = True
 
 
@@ -780,8 +780,6 @@ def stackdays(datalist,sessiondatalist,school,startdate,enddate):
 					#  Check to make sure this isn't a session day or a weekend.
 					if (fulldatadayofweek != itemdayofweek) and (fulldatadayofweek != 'Sun') and (fulldatadayofweek != 'Sat') and excluded2 == False:
 						
-						print fulldata.date
-
 						fulldatatemppinglist = list()
 						fulldatatempjitterlist = list()
 						fulldatatemplosslist = list()
