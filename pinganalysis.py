@@ -210,7 +210,7 @@ def blackboxread(file):
 	pingtimes = list()
 	jitters = list()
 	losses = list()
-	session = list()
+	session = False
 
 	#  Determine the date.
 	
@@ -284,12 +284,12 @@ def blackboxread(file):
 
 	#  Determine whether this dataset represents a session day (recursively for each location inclueded in file).
 	count = 0
-	for item in location:
+	for item in location:    #####  FIX THIS!!!!!!!!!!  CAUSING DOUBLE COUNTING (**2) ######
 		sessionday = classtoday[item]
 		if (sessionday == dayofweek):
-			session.append(True)
+			session = True
 		else:
-			session.append(False)
+			session = False
 		count += 1
 
 	#  Return all the relevant values.
@@ -723,13 +723,13 @@ def stackdays(datalist,sessiondatalist,school,startdate,enddate):
 
 		for excludeddate in excludedlist:
 			if item.date == excludeddate.date():
-				print True
 				excluded = True
 
 
 		if item.date >= startdate.date() and item.date <= enddate.date() and excluded == False:
 			timelen = len(item.times)
 			locations = item.location
+			print locations
 
 			#  Find session data
 			itempings = item.pingtimes
@@ -807,11 +807,16 @@ def stackdays(datalist,sessiondatalist,school,startdate,enddate):
 				refjitterstdev = refjitterstdevtot/refcount
 				reflossstdev = reflossstdevtot/refcount
 
+				ind = np.array([1])
+				ind2 = np.array([2])
 
 				#  Calculate statistics for ping times.
 				itempingsaverage = np.mean(np.array(itempings))
 				itempingsstd = np.std(np.array(itempings))
 				nosessionpingsaverage = np.mean(np.array(nosessionpings))
+
+#				plt.plot(ind,itempingsaverage,'ro')
+#				plt.show()
 
 				print itempingsaverage,itempingsstd,nosessionpingsaverage,refpingstdev
 
@@ -820,14 +825,14 @@ def stackdays(datalist,sessiondatalist,school,startdate,enddate):
 				itemjittersstd = np.std(np.array(itemjitters))
 				nosessionjittersaverage = np.mean(np.array(nosessionjitters))
 
-				print itemjittersaverage,itemjittersstd,nosessionjittersaverage,refjitterstdev
+#				print itemjittersaverage,itemjittersstd,nosessionjittersaverage,refjitterstdev
 
 				#  Calculate statistics for packet loss.
 				itemlossesaverage = np.mean(np.array(itemlosses))
 				itemlossesstd = np.std(np.array(itemlosses))
 				nosessionlossesaverage = np.mean(np.array(nosessionlosses))
 
-				print itemlossesaverage,itemlossesstd,nosessionlossesaverage,reflossstdev
+#				print itemlossesaverage,itemlossesstd,nosessionlossesaverage,reflossstdev
 
 
 	return
@@ -886,7 +891,10 @@ def pullsessiondata(data,location):
 		else:
 			i += 1
 
-	sessionData = BlackboxData(data.location,data.date,data.dayofweek,timecut,pingcut,jittercut,losscut,data.session)
+	loclist = list()
+	loclist.append(location)
+
+	sessionData = BlackboxData(loclist,data.date,data.dayofweek,timecut,pingcut,jittercut,losscut,data.session)
 
 	return sessionData
 
@@ -897,13 +905,13 @@ def blackboxanalyze(datalist):
 	#  Loop over the full list of data.
 	for item in datalist:
 		#  If the data include a session, push to pullsessiondata to pull out a session data list.
-		count = 0
-		for flag in item.session:
-			if flag == True:
-				for location in item.location:
-					test = pullsessiondata(item,location)
-					sessiondatalist.append(test)
-		count += 1
+		if item.session == True:
+			for location in item.location:
+				test = pullsessiondata(item,location)
+				sessiondatalist.append(test)
+
+	print sessiondatalist
+	print len(sessiondatalist)
 
 	#  Plot data for each site.
 	sortblackboxdata(datalist,sessiondatalist)
