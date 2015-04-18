@@ -55,7 +55,7 @@ classtoday = {'Cabrillo':'Mon','Castlemont Tue 9:40':'Tue','Castlemont Tue 11:50
 #  Find session start time based on class (based on local time).
 locationtostart = {'Cabrillo':dt.time(0,0,0),'Castlemont Tue 9:40':dt.time(9,37,0),'Castlemont Tue 11:50':dt.time(11,47,0),
 'Columbia':dt.time(15,15,0),'IBL_Thurs 9:50':dt.time(9,50,0),'IBL_Thurs 10:40':dt.time(10,40,0),'IBL_Thurs 11:30':dt.time(11,28,0),
-'IBL_Thurs 2:20':dt.time(),'Horn':dt.time(0,0,0),'Irving High Thurs 1':dt.time(13,30,0), 'Irving High Thurs 9':dt.time(9,15,0),
+'IBL_Thurs 2:20':dt.time(14,20,0),'Horn':dt.time(0,0,0),'Irving High Thurs 1':dt.time(13,30,0), 'Irving High Thurs 9':dt.time(9,15,0),
 'Irving High Thurs 3':dt.time(15,10,0),'Morrill':dt.time(8,52,0),'Nimitz Wed 12':dt.time(12,40,0), 'Nimitz Wed 10':dt.time(10,5,0), 
 'Nimitz Wed 3':dt.time(15,10,0), 'Overfelt':dt.time(13,20,0), 'Piedmont':dt.time(13,33,0), 'RL Turner Tue 8':dt.time(8,0,0),
 'RL Turner Tue 1':dt.time(13,0,0),'Sierramont Tue 10':dt.time(9,1,0), 'Sierramont Tue 12':dt.time(13,30,0),'SLHS Thurs 12':dt.time(12,1,0),
@@ -64,7 +64,7 @@ locationtostart = {'Cabrillo':dt.time(0,0,0),'Castlemont Tue 9:40':dt.time(9,37,
 #  Find session end time based on class (based on local time).
 locationtoend = {'Cabrillo':dt.time(1,0,0),'Castlemont Tue 9:40':dt.time(10,37,0),'Castlemont Tue 11:50':dt.time(12,47,0),
 'Columbia':dt.time(16,15,0),'IBL_Thurs 9:50':dt.time(10,40,0),'IBL_Thurs 10:40':dt.time(11,25,0),'IBL_Thurs 11:30':dt.time(12,13,0),
-'IBL_Thurs 2:20':dt.time(),'Horn':dt.time(1,0,0),'Irving High Thurs 1':dt.time(14,30,0), 'Irving High Thurs 9':dt.time(10,15,0),
+'IBL_Thurs 2:20':dt.time(15,0,0),'Horn':dt.time(1,0,0),'Irving High Thurs 1':dt.time(14,30,0), 'Irving High Thurs 9':dt.time(10,15,0),
 'Irving High Thurs 3':dt.time(16,10,0),'Morrill':dt.time(9,45,0),'Nimitz Wed 12':dt.time(13,40,0), 'Nimitz Wed 10':dt.time(11,5,0), 
 'Nimitz Wed 3':dt.time(16,10,0), 'Overfelt':dt.time(14,15,0), 'Piedmont':dt.time(14,29,0), 'RL Turner Tue 8':dt.time(9,0,0),
 'RL Turner Tue 1':dt.time(14,0,0),'Sierramont Tue 10':dt.time(9,56,0), 'Sierramont Tue 12':dt.time(14,25,0),'SLHS Thurs 12':dt.time(12,56,0),
