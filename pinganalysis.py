@@ -736,6 +736,7 @@ def stackdays(datalist,sessiondatalist,school,startdate,enddate):
 		if item.date >= startdate.date() and item.date <= enddate.date() and excluded == False:
 			timelen = len(item.times)
 			locations = item.location
+			loclist.extend(locations)
 
 			#  Find session data
 			itempings = item.pingtimes
@@ -843,16 +844,9 @@ def stackdays(datalist,sessiondatalist,school,startdate,enddate):
 				lossarray[2,numberofcompsessions] = nosessionlossesaverage
 				lossarray[3,numberofcompsessions] = reflossstdev
 
-				print lossarray
-
-				print itemlossesaverage,itemlossesstd,nosessionlossesaverage,reflossstdev
-
 				numberofcompsessions += 1
-				print numberofcompsessions
 
-
-
-	return
+	return loclist,numberofcompsessions,pingarray,jitterarray,lossarray
 
 def sortblackboxdata(datalist,sessiondatalist):
 
@@ -881,7 +875,84 @@ def sortblackboxdata(datalist,sessiondatalist):
 
 		if (schoolitemlist != []):
 			graphdates(schoolitemlist,school,startdategraph,enddategraph)
-			stackdays(schoolitemlist,sessionslist,school,startdateanalysis,enddateanalysis)  ##FIX START AND END##
+			loclist,count,pingarray,jitterarray,lossarray = stackdays(schoolitemlist,sessionslist,school,startdateanalysis,enddateanalysis)
+
+			#  Plot comparisons between session and no session.
+			fig = plt.figure()
+
+			#  Compare ping time
+			plt.subplot(311)
+			ind = np.linspace(1,count,num=count)
+			ind2 = np.linspace(1.2,count+0.2,num=count)
+			plotarray = pingarray[0,0:(count)]
+			plotarray = plotarray.transpose()
+			ploterrors = pingarray[1,0:(count)]
+			ploterrors = ploterrors.transpose()
+			comparray = pingarray[2,0:(count)]
+			comparray = comparray.transpose()
+			comperrors = pingarray[3,0:(count)]
+			comperrors = comperrors.transpose()
+			minimum = np.min(plotarray) - 2
+			maximum = np.max(plotarray) + 2
+			plt.plot(ind,plotarray,'bo',ind2,comparray,'ro')
+			plt.errorbar(ind,plotarray,yerr=ploterrors,fmt='o')
+			plt.errorbar(ind2,comparray,yerr=comperrors,fmt='o')
+			plt.axis([0,count+2,minimum,maximum])
+			plt.xlabel('Session Number')
+			plt.ylabel('Average Ping Time (ms)')
+			plt.title('Session vs. No Session - Ping Time' + school)
+
+			#  Compare jitter
+			plt.subplot(312)
+			plotarray = jitterarray[0,0:(count)]
+			plotarray = plotarray.transpose()
+			ploterrors = jitterarray[1,0:(count)]
+			ploterrors = ploterrors.transpose()
+			comparray = jitterarray[2,0:(count)]
+			comparray = comparray.transpose()
+			comperrors = jitterarray[3,0:(count)]
+			comperrors = comperrors.transpose()
+			minimum = np.min(plotarray) - 2
+			maximum = np.max(plotarray) + 2
+			plt.plot(ind,plotarray,'bo',ind2,comparray,'ro')
+			plt.errorbar(ind,plotarray,yerr=ploterrors,fmt='o')
+			plt.errorbar(ind2,comparray,yerr=comperrors,fmt='o')
+			plt.axis([0,count+2,minimum,maximum])
+			plt.xlabel('Session Number')
+			plt.ylabel('Jitter (ms)')
+			plt.title('Session vs. No Session - Jitter')
+
+			#  Compare % loss
+			plt.subplot(313)
+			plotarray = lossarray[0,0:(count)]
+			plotarray = plotarray.transpose()
+			ploterrors = lossarray[1,0:(count)]
+			ploterrors = ploterrors.transpose()
+			comparray = lossarray[2,0:(count)]
+			comparray = comparray.transpose()
+			comperrors = lossarray[3,0:(count)]
+			comperrors = comperrors.transpose()
+			minimum = np.min(plotarray) - 2
+			maximum = np.max(plotarray) + 2
+			plt.plot(ind,plotarray,'bo',ind2,comparray,'ro')
+			plt.errorbar(ind,plotarray,yerr=ploterrors,fmt='o')
+			plt.errorbar(ind2,comparray,yerr=comperrors,fmt='o')
+			plt.axis([0,count+2,minimum,maximum])
+			plt.xlabel('Session Number')
+			plt.ylabel('Percent Packet Loss')
+			plt.title('Session vs. No Session - Percent Packet Loss')
+
+			plt.suptitle('Session vs. No Session Comparison - '+school, fontsize=20)
+
+			fig.set_size_inches(10.5,18.5)
+
+			fig.savefig('SessionComp'+'_'+school)
+
+			plt.close()
+
+			fig.clf()
+
+			print loclist, count
 
 	return
 

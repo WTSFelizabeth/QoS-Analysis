@@ -436,11 +436,15 @@ class FullSurveyData():
 		dectot = 0
 		jantot = 0
 		febtot = 0
+		martot = 0
+		aprtot = 0
 		octcount = 0
 		novcount = 0
 		deccount = 0
 		jancount = 0
 		febcount = 1
+		marcount = 1
+		aprcount = 1
 
 		while (i < length):
 			if (self.overalls[i] != '') and (self.locations[i] != 'Testing'):
@@ -468,7 +472,15 @@ class FullSurveyData():
 				elif (month == 2):
 					rating = overallratings[self.overalls[i]]
 					febtot += rating
-					febcount += 1									
+					febcount += 1
+				elif (month == 3):
+					rating = overallratings[self.overalls[i]]
+					martot += rating
+					marcount += 1
+				elif (month == 4):
+					rating = overallratings[self.overalls[i]]
+					aprtot += rating
+					aprcount += 1									
 			i += 1
 
 		october = octtot/octcount
@@ -476,12 +488,14 @@ class FullSurveyData():
 		december = dectot/deccount
 		january = jantot/jancount
 		february = febtot/febcount
+		march = martot/marcount
+		april = aprtot/aprcount
 
-		ind = np.array([0.5,1.5,2.5,3.5,4.5])
+		ind = np.array([0.5,1.5,2.5,3.5,4.5,5.5,6.5])
 		width = 0.65
-		plt.bar(ind,[october,november,december,january,february],width)
-		plt.axis([0,5.5,0,4])
-		plt.xticks(ind+width/2., ('October', 'November', 'December', 'January','February'))
+		plt.bar(ind,[october,november,december,january,february,march,april],width)
+		plt.axis([0,7.5,0,4])
+		plt.xticks(ind+width/2., ('October', 'November', 'December', 'January','February','March','April'))
 		plt.title('Overall Survey Results Over Time')
 		plt.ylabel('Average Overall Survey Rating')
 		plt.show()
@@ -725,11 +739,15 @@ class SchoolSurveyData():
 		dectot = 0
 		jantot = 0
 		febtot = 0
+		martot = 0
+		aprtot = 0
 		octcount = 0
 		novcount = 0
 		deccount = 0
 		jancount = 0
 		febcount = 0
+		marcount = 0
+		aprcount = 0
 
 		while (i < length):
 			if (self.overalls[i] != '') and (self.school != 'Testing'):
@@ -757,7 +775,15 @@ class SchoolSurveyData():
 				elif (month == 2):
 					rating = overallratings[self.overalls[i]]
 					febtot += rating
-					febcount += 1										
+					febcount += 1
+				elif (month == 3):
+					rating = overallratings[self.overalls[i]]
+					martot += rating
+					marcount += 1
+				elif (month == 4):
+					rating = overallratings[self.overalls[i]]
+					aprtot += rating
+					aprcount += 1										
 			i += 1
 
 		if (octcount != 0):
@@ -780,13 +806,21 @@ class SchoolSurveyData():
 			february = febtot/febcount
 		else:
 			february = 0
+		if (marcount != 0):
+			march = martot/marcount
+		else:
+			march = 0
+		if (aprcount != 0):
+			april = aprtot/aprcount
+		else:
+			april = 0
 
-		if (october != 0 or november != 0 or december != 0 or january != 0 or february != 0):
-			ind = np.array([0.5,1.5,2.5,3.5,4.5])
+		if (october != 0 or november != 0 or december != 0 or january != 0 or february != 0 or march != 0 or april != 0):
+			ind = np.array([0.5,1.5,2.5,3.5,4.5,5.5,6.5])
 			width = 0.65
-			plt.bar(ind,[october,november,december,january,february],width)
-			plt.axis([0,5.5,0,4])
-			plt.xticks(ind+width/2., ('Oct', 'Nov', 'Dec', 'Jan', 'Feb'))
+			plt.bar(ind,[october,november,december,january,february,march,april],width)
+			plt.axis([0,7.5,0,4])
+			plt.xticks(ind+width/2., ('Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr'))
 			plt.title('Overall Survey Results Over Time - '+self.school)
 			plt.ylabel('Average Overall Survey Rating')
 
