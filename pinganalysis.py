@@ -848,6 +848,61 @@ def stackdays(datalist,sessiondatalist,school,startdate,enddate):
 
 	return loclist,numberofcompsessions,pingarray,jitterarray,lossarray
 
+
+def sessionvsnostats(pingarray,jitterarray,lossarray,count):
+
+	pings = pingarray[0,0:(count)]
+	jitters = jitterarray[0,0:(count)]
+	losses = lossarray[0,0:(count)]
+
+	pingavg = np.sum(pings)/count
+	jitteravg = np.sum(jitters)/count
+	lossavg = np.sum(losses)/count
+
+	pingcomps = pingarray[2,0:(count)]
+	jittercomps = jitterarray[2,0:(count)]
+	losscomps = lossarray[2,0:(count)]
+
+	pingcompavg = np.sum(pingcomps)/count
+	jittercompavg = np.sum(jittercomps)/count
+	losscompavg = np.sum(losscomps)/count
+
+	pingdel = pingavg-pingcompavg
+	jitterdel = jitteravg-jittercompavg
+	lossdel = lossavg-losscompavg
+
+	pingstdevs = pingarray[1,0:(count)]
+	jitterstdevs = jitterarray[1,0:(count)]
+	lossstdevs = lossarray[1,0:(count)]
+
+	pingsquares = np.sum(np.square(pingstdevs))
+	jittersquares = np.sum(np.square(jitterstdevs))
+	losssquares = np.sum(np.square(lossstdevs))
+
+	pingstdev = np.sqrt(pingsquares/count)
+	jitterstdev = np.sqrt(jittersquares/count)
+	lossstdev = np.sqrt(losssquares/count)
+
+	pingcompstdevs = pingarray[3,0:(count)]
+	jittercompstdevs = jitterarray[3,0:(count)]
+	losscompstdevs = lossarray[3,0:(count)]
+
+	pingcompsquares = np.sum(np.square(pingcompstdevs))
+	jittercompsquares = np.sum(np.square(jittercompstdevs))
+	losscompsquares = np.sum(np.square(losscompstdevs))
+
+	pingcompstdev = np.sqrt(pingcompsquares/count)
+	jittercompstdev = np.sqrt(jittercompsquares/count)
+	losscompstdev = np.sqrt(losscompsquares/count)
+
+	pingstat = pingdel/pingcompstdev
+	jitterstat = jitterdel/jittercompstdev
+	lossstat = lossdel/losscompstdev
+
+	print pingstat, jitterstat, lossstat
+
+	return pingstat, jitterstat, lossstat
+
 def sortblackboxdata(datalist,sessiondatalist):
 
 	schooldatalist = list()
@@ -953,6 +1008,7 @@ def sortblackboxdata(datalist,sessiondatalist):
 			fig.clf()
 
 			print loclist, count
+			pingstat, jitterstat, lossstat = sessionvsnostats(pingarray,jitterarray,lossarray,count)
 
 	return
 
