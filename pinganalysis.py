@@ -899,9 +899,17 @@ def sessionvsnostats(pingarray,jitterarray,lossarray,count):
 	jitterstat = jitterdel/jittercompstdev
 	lossstat = lossdel/losscompstdev
 
-	print pingstat, jitterstat, lossstat
-
 	return pingstat, jitterstat, lossstat
+
+def stattoprob(pingstat,jitterstat,lossstat):
+
+	pingprob = sp.stats.norm.cdf(pingstat)
+
+	jitterprob = sp.stats.norm.cdf(jitterstat)
+
+	lossprob = sp.stats.norm.cdf(lossstat)
+
+	return pingprob, jitterprob, lossprob
 
 def sortblackboxdata(datalist,sessiondatalist):
 
@@ -1007,8 +1015,17 @@ def sortblackboxdata(datalist,sessiondatalist):
 
 			fig.clf()
 
-			print loclist, count
 			pingstat, jitterstat, lossstat = sessionvsnostats(pingarray,jitterarray,lossarray,count)
+			pingprob, jitterprob, lossprob = stattoprob(pingstat,jitterstat,lossstat)
+
+			print 'At',school,', the session pings are',pingstat,'standard devations away from the mean on non-session days at the same time.'
+			print 'Probability of statistical significance =',pingprob,'(based on',count,'sessions)'
+
+			print 'At',school,', the session jitter is',jitterstat,'standard devations away from the mean on non-session days at the same time.'
+			print 'Probability of statistical significance =',jitterprob,'(based on',count,'sessions)'
+
+			print 'At',school,', the session packet loss is',lossstat,'standard devations away from the mean on non-session days at the same time.'
+			print 'Probability of statistical significance =',lossprob,'(based on',count,'sessions)'
 
 	return
 
