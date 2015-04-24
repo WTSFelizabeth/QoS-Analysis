@@ -285,12 +285,24 @@ def blackboxread(file):
 
 	#  Determine whether this dataset represents a session day (recursively for each location inclueded in file).
 	count = 0
-	for item in location:    #####  FIX THIS!!!!!!!!!!  CAUSING DOUBLE COUNTING (**2) ######
+
+	for item in location: 
+		sessionsoutlist = blackboxdaysnosession[item]
+		sessionsaddedlist = blackboxdayssessions[item]
+
 		sessionday = classtoday[item]
 		if (sessionday == dayofweek):
 			session = True
 		else:
 			session = False
+
+		for day in sessionsoutlist:
+			if date == day.date():
+				session = False
+
+		for day in sessionsaddedlist:
+			if date == day.date():
+				session = True
 		count += 1
 
 	#  Return all the relevant values.
@@ -348,21 +360,21 @@ def graphdates(schoolitemlist,school,startdate,enddate,smoothing=False):
 	plt.plot(datetimelist,pinglist)
 	plt.xlabel('Date')
 	plt.ylabel('Ping Time (ms)')
-	plt.axis([startdate,enddate,0,60])
+	plt.axis([startdate,enddate,0,30])
 	plt.gca().xaxis.set_major_formatter(mpl.dates.DateFormatter("%b %d"))
 
 	plt.subplot(312)
 	plt.plot(datetimelist,jitterlist)
 	plt.xlabel('Date')
 	plt.ylabel('Jitter (ms)')
-	plt.axis([startdate,enddate,0,100])
+	plt.axis([startdate,enddate,0,60])
 	plt.gca().xaxis.set_major_formatter(mpl.dates.DateFormatter("%b %d"))
 
 	plt.subplot(313)
 	plt.plot(datetimelist,losslist)
 	plt.xlabel('Date')
 	plt.ylabel('% of packets lost')
-	plt.axis([startdate,enddate,0,30])
+	plt.axis([startdate,enddate,0,20])
 	plt.gca().xaxis.set_major_formatter(mpl.dates.DateFormatter("%b %d"))
 
 	fig.set_size_inches(10.5,18.5)
@@ -417,7 +429,7 @@ def plotweekcomp(hours,stackedweekday,stackedweekend,school):
 	weekday = mpl.patches.Patch(color = 'blue',label = 'Average Weekday')
 	weekend = mpl.patches.Patch(color = 'orange',label = 'Average Weekend')
 	plt.legend(handles=[weekday,weekend],prop={'size':10})
-	plt.axis([0,24,0,50])
+	plt.axis([0,24,0,15])
 	plt.title('Average Ping Time on Weekdays vs. Weekends')
 	plt.xlabel('Hour of Day')
 	plt.ylabel('Average Ping Time (ms)')
@@ -428,7 +440,7 @@ def plotweekcomp(hours,stackedweekday,stackedweekend,school):
 	weekday = mpl.patches.Patch(color = 'blue',label = 'Average Weekday')
 	weekend = mpl.patches.Patch(color = 'orange',label = 'Average Weekend')
 	plt.legend(handles=[weekday,weekend],prop={'size':10})
-	plt.axis([0,24,0,50])
+	plt.axis([0,24,0,20])
 	plt.title('Average Jitter on Weekdays vs. Weekends')
 	plt.xlabel('Hour of Day')
 	plt.ylabel('Jitter (ms)')
@@ -439,7 +451,7 @@ def plotweekcomp(hours,stackedweekday,stackedweekend,school):
 	weekday = mpl.patches.Patch(color = 'blue',label = 'Average Weekday')
 	weekend = mpl.patches.Patch(color = 'orange',label = 'Average Weekend')
 	plt.legend(handles=[weekday,weekend],prop={'size':10})
-	plt.axis([0,24,0,15])
+	plt.axis([0,24,0,8])
 	plt.title('Average Packet Loss on Weekdays vs. Weekends')
 	plt.xlabel('Hour of Day')
 	plt.ylabel('Average Packet Loss (%)')
@@ -964,7 +976,10 @@ def sortblackboxdata(datalist,sessiondatalist):
 			plt.axis([0,count+2,minimum,maximum])
 			plt.xlabel('Session Number')
 			plt.ylabel('Average Ping Time (ms)')
-			plt.title('Session vs. No Session - Ping Time' + school)
+			plt.title('Session vs. No Session - Ping Time')
+			blue = mpl.patches.Patch(color = 'blue', label = 'Session Average')
+			green = mpl.patches.Patch(color = 'green', label = 'Comparison Average')
+			plt.legend(handles=[blue,green],prop={'size':12})
 
 			#  Compare jitter
 			plt.subplot(312)
@@ -1034,6 +1049,16 @@ def pullsessiondata(data,location):
 
 	starttime = locationtostart[location]
 	endtime = locationtoend[location]
+
+	dayofweek = data.dayofweek
+	date = data.date
+
+	extrasessions = blackboxdayssessions[location]
+
+	for item in extrasessions:
+		if date == item:
+			starttime = blackboxspecialtimesstart[location]
+			endtime = blackboxspecialtimesend[location]
 
 	length = len(data.times)
 	i = 0
