@@ -915,11 +915,17 @@ def sessionvsnostats(pingarray,jitterarray,lossarray,count):
 
 def stattoprob(pingstat,jitterstat,lossstat):
 
-	pingprob = sp.stats.norm.cdf(pingstat)
+	ping1 = sp.stats.norm.cdf(np.abs(pingstat))
+	ping2 = sp.stats.norm.cdf(-1*np.abs(pingstat))
+	pingprob = ping1-ping2
 
-	jitterprob = sp.stats.norm.cdf(jitterstat)
+	jitter1 = sp.stats.norm.cdf(np.abs(jitterstat))
+	jitter2 = sp.stats.norm.cdf(-1*np.abs(jitterstat))
+	jitterprob = jitter1-jitter2
 
-	lossprob = sp.stats.norm.cdf(lossstat)
+	loss1 = sp.stats.norm.cdf(np.abs(lossstat))
+	loss2 = sp.stats.norm.cdf(-1*np.abs(lossstat))
+	lossprob = loss1-loss2
 
 	return pingprob, jitterprob, lossprob
 
