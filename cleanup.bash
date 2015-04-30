@@ -37,7 +37,6 @@ mv /Users/elizabeth/Documents/Analysis/pinglogs/IBL_Thurs_11_30_11-21-2014_3.3 /
 mv /Users/elizabeth/Documents/Analysis/pinglogs/IBL_Thurs_2_20_11-21-2014_5.30 /Users/elizabeth/Documents/Analysis/pinglogs/IBL_Thurs_2_20_11-20-2014_5.30
 mv /Users/elizabeth/Documents/Analysis/pinglogs/IBL_Thurs_9_50_11-21-2014_0.52 /Users/elizabeth/Documents/Analysis/pinglogs/IBL_Thurs_9_50_11-20-2014_0.52
 
-
 #  Pipe remaining files to a list for use in the main program.
 temp=$(find /Users/elizabeth/Documents/Analysis/pinglogs/*[0-9] | sed 's/^/"/g' | sed 's/$/"/g' | tr '\n' ',')
 temp2=$(echo "$temp" | rev | cut -c 2- | rev)
