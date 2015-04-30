@@ -8,7 +8,7 @@ for file in /Users/elizabeth/Documents/Analysis/pinglogs/*[0-9]; do mv "$file" "
 grep -rnwl '/Users/elizabeth/Documents/Analysis/pinglogs' -e "ERROR" | xargs rm
 
 #  Find all survey lines with AC (Adobe Connect) , pipe to file.
-grep -r '/Users/elizabeth/Documents/Analysis/fullsurveys.txt' -e "ACPilot" > ACPilotsurveys.txt
+grep -hr '/Users/elizabeth/Documents/Analysis/fullsurveys.txt' -e "ACPilot" > ACPilotsurveys.txt
 
 #  Remove all AC Pilot survey results from surveys.txt.
 grep -v '/Users/elizabeth/Documents/Analysis/fullsurveys.txt' -e "ACPilot" > surveys.txt
