@@ -8,7 +8,7 @@ for file in /Users/elizabeth/Documents/Analysis/pinglogs/*[0-9]; do mv "$file" "
 grep -rnwl '/Users/elizabeth/Documents/Analysis/pinglogs' -e "ERROR" | xargs rm
 
 #  Find all survey lines with AC (Adobe Connect) , pipe to file.
-grep -r '/Users/elizabeth/Documents/Analysis/fullsurveys.txt' -e "ACPilot" > ACPilotsurveys.txt
+grep -hr '/Users/elizabeth/Documents/Analysis/fullsurveys.txt' -e "ACPilot" > ACPilotsurveys.txt
 
 #  Remove all AC Pilot survey results from surveys.txt.
 grep -v '/Users/elizabeth/Documents/Analysis/fullsurveys.txt' -e "ACPilot" > surveys.txt
@@ -36,7 +36,6 @@ mv /Users/elizabeth/Documents/Analysis/pinglogs/IBL_Thurs_10_40_11-21-2014_1.40	
 mv /Users/elizabeth/Documents/Analysis/pinglogs/IBL_Thurs_11_30_11-21-2014_3.3 /Users/elizabeth/Documents/Analysis/pinglogs/IBL_Thurs_11_30_11-20-2014_3.3
 mv /Users/elizabeth/Documents/Analysis/pinglogs/IBL_Thurs_2_20_11-21-2014_5.30 /Users/elizabeth/Documents/Analysis/pinglogs/IBL_Thurs_2_20_11-20-2014_5.30
 mv /Users/elizabeth/Documents/Analysis/pinglogs/IBL_Thurs_9_50_11-21-2014_0.52 /Users/elizabeth/Documents/Analysis/pinglogs/IBL_Thurs_9_50_11-20-2014_0.52
-
 
 #  Pipe remaining files to a list for use in the main program.
 temp=$(find /Users/elizabeth/Documents/Analysis/pinglogs/*[0-9] | sed 's/^/"/g' | sed 's/$/"/g' | tr '\n' ',')

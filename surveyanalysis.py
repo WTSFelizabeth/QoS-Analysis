@@ -564,10 +564,10 @@ def surveyimport(file):
 	return dates, rooms, usernames, usertypes, locations, videos, browsers, operatingsystems, versions, overalls, hearing, delays, understandings, cuttings, videoprobs, whiteboardprobs
 
 ######  Feed survey data to various analysis functions, then return class data list for session analysis.  ######
-def surveycontroller(file):
+def surveycontroller(filename):
 
 	#  Import the full set of survey results.
-	dates, rooms, usernames, usertypes, locations, videos, browsers, operatingsystems, versions, overalls, hearing, delays, understandings, cuttings, videoprobs, whiteboardprobs = surveyimport('surveys.txt')
+	dates, rooms, usernames, usertypes, locations, videos, browsers, operatingsystems, versions, overalls, hearing, delays, understandings, cuttings, videoprobs, whiteboardprobs = surveyimport(filename)
 
 	#  Create a full survey object.
 	fullData = FullSurveyData(dates, usernames, usertypes, locations, videos, browsers, operatingsystems, versions, overalls, hearing, delays, understandings, cuttings, videoprobs, whiteboardprobs)
@@ -614,3 +614,11 @@ def surveycontroller(file):
 	plt.close()
 
 	return classDataList
+
+def acsurveycontroller(filename):
+
+	dates, rooms, usernames, usertypes, locations, videos, browsers, operatingsystems, versions, overalls, hearing, delays, understandings, cuttings, videoprobs, whiteboardprobs = surveyimport(filename)
+	print overalls
+	print len(overalls)
+	
+	return

@@ -1,0 +1,3 @@
+#  acdictionaries.py
+
+acclasslist = []

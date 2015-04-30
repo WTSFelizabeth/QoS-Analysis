@@ -25,7 +25,7 @@ from slhsblackboxfilelist import *
 from sierramontblackboxfilelist import *
 
 
-#import all the ping data (required:  list of files)
+#  import all the ping data (required:  list of files)
 pinglist = pingimport(pingfiles)
 
 #  analyze blackbox data
@@ -41,8 +41,9 @@ sierramontblackboxsessionlist = blackboxanalyze(sierramontblackboxpinglist)
 slhsblackboxpinglist = blackboximport(slhsblackboxpingfiles)
 slhsblackboxsessionlist = blackboxanalyze(slhsblackboxpinglist)
 
-#import the surveys
+#  import the surveys
 classsurveylist = surveycontroller('surveys.txt')
+acsurveylist = acsurveycontroller('ACPilotsurveys.txt')
 
 #  Feed the survey and class ping data to the session analysis module.
 sessionanalysis(classsurveylist,pinglist,testblackboxsessionlist)
