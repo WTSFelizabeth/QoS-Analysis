@@ -618,7 +618,8 @@ def surveycontroller(filename):
 def acsurveycontroller(filename):
 
 	dates, rooms, usernames, usertypes, locations, videos, browsers, operatingsystems, versions, overalls, hearing, delays, understandings, cuttings, videoprobs, whiteboardprobs = surveyimport(filename)
-	print overalls
-	print len(overalls)
+
+	#  Create a full survey object.
+	fullACData = ACFullSurveyData(dates, usernames, usertypes, locations, videos, browsers, operatingsystems, versions, overalls, hearing, delays, understandings, cuttings, videoprobs, whiteboardprobs)
 	
 	return

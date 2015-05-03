@@ -929,3 +929,24 @@ class SchoolSurveyData():
 		plt.close()
 
 		return
+
+class ACFullSurveyData():
+
+	def __init__(self, dates, usernames, usertypes, locations, videos, browsers, operatingsystems, versions, overalls, hearing, delays, understandings, cuttings, videoprobs, whiteboardprobs):
+
+		#  Link data to the object.
+		self.dates = dates
+		self.usernames = usernames
+		self.usertypes = usertypes
+		self.locations = locations
+		self.videos = videos
+		self.browsers = browsers
+		self.operatingsystems = operatingsystems
+		self.versions = versions
+		self.overalls = overalls
+		self.hearing = hearing
+		self.delays = delays
+		self.understandings = understandings
+		self.cuttings = cuttings
+		self.videoprobs = videoprobs
+		self.whiteboardprobs = whiteboardprobs
