@@ -14,6 +14,7 @@ import csv
 
 from surveydata import *
 from dictionaries import classlist, classtoschool, schoollist
+from acdictionaries import acclasslist
 
 ######  Sort through surveys to find those at the desired location.  ######
 def surveyfindclass(dates, rooms, usernames, usertypes, locations, videos, browsers, operatingsystems, versions, overalls, hearing, delays, understandings, cuttings, videoprobs, whiteboardprobs, desiredlocation):
@@ -621,5 +622,13 @@ def acsurveycontroller(filename):
 
 	#  Create a full survey object.
 	fullACData = ACFullSurveyData(dates, usernames, usertypes, locations, videos, browsers, operatingsystems, versions, overalls, hearing, delays, understandings, cuttings, videoprobs, whiteboardprobs)
-	
+	fullACData.aggregateSurvey()
+
+	#  Sort the AC surveys by class
+	ACclassDataList = list()
+
+	for entry in acclasslist:
+		classData = surveysortclass(dates, rooms, usernames, usertypes, locations, videos, browsers, operatingsystems, versions, overalls, hearing, delays, understandings, cuttings, videoprobs, whiteboardprobs, entry)
+		ACclassDataList.append(classData)
+
 	return
