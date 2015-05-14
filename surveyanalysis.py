@@ -584,6 +584,15 @@ def surveycontroller(filename):
 		classData = surveysortclass(dates, rooms, usernames, usertypes, locations, videos, browsers, operatingsystems, versions, overalls, hearing, delays, understandings, cuttings, videoprobs, whiteboardprobs, entry)
 		classDataList.append(classData)
 
+	acCompList = list()
+
+	# Pull comparison classes for AC pilot.
+	for entry in acclasslist:
+		for item in classDataList:
+			location = item.location
+			if entry == location:
+				acCompList.append(item)
+
 	sortedgraphs(classDataList)
 
 	#  Sort the surveys by school - creating one object for each school and adding to a list.
@@ -614,9 +623,9 @@ def surveycontroller(filename):
 
 	plt.close()
 
-	return classDataList
+	return classDataList, acCompList
 
-def acsurveycontroller(filename):
+def acsurveycontroller(filename,accomplist):
 
 	dates, rooms, usernames, usertypes, locations, videos, browsers, operatingsystems, versions, overalls, hearing, delays, understandings, cuttings, videoprobs, whiteboardprobs = surveyimport(filename)
 
@@ -627,8 +636,21 @@ def acsurveycontroller(filename):
 	#  Sort the AC surveys by class
 	ACclassDataList = list()
 
+	#  Creat plots for each AC class.
 	for entry in acclasslist:
 		classData = surveysortclass(dates, rooms, usernames, usertypes, locations, videos, browsers, operatingsystems, versions, overalls, hearing, delays, understandings, cuttings, videoprobs, whiteboardprobs, entry)
 		ACclassDataList.append(classData)
+		if classData.overalls != []:
+			acoveralls,achearings,acdelays,acunderstandings,accuttings,acwhiteboards = classData.acPlotAggregate()
+		for item in accomplist:
+			if item.location == entry:
+				compoveralls,comphearings,compdelays,compunderstandings,compcuttings,compwhiteboards = item.acPlotAggregate(flag = True)
 
+		diffoveralls = acoveralls - compoveralls
+		diffhearings = achearings - comphearings
+		diffdelays = acdelays - compdelays
+		diffunderstandings = acunderstandings - compunderstandings
+		diffcuttings = accuttings - compcuttings
+		diffwhiteboards = acwhiteboards - compwhiteboards
+		
 	return

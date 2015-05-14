@@ -644,6 +644,118 @@ class ClassSurveyData():
 		surveycount = len(self.overalls)
 		return surveycount
 
+	def acPlotAggregate(self,flag = False):
+
+		length = len(self.overalls)
+		overallist = list()
+		hearinglist = list()
+		delayslist = list()
+		understandingslist = list()
+		cuttingslist = list()
+		whiteboardlist = list()
+		i = 0
+
+		while (i < length):
+			if (self.overalls[i] != ''):
+				overallist.append(self.overalls[i])
+			if (self.hearing[i] != ''):
+				hearinglist.append(self.hearing[i])
+			if (self.delays[i] != ''):
+				delayslist.append(self.delays[i])
+			if (self.understandings[i] != ''):
+				understandingslist.append(self.understandings[i])
+			if (self.cuttings[i] != ''):
+				cuttingslist.append(self.cuttings[i])
+			if (self.whiteboardprobs[i] != ''):
+				whiteboardlist.append(self.whiteboardprobs[i])
+
+			i += 1
+
+		overalltab = np.array(overallCount(overallist))
+		overallratings = overalltab/length
+
+		hearingratings = np.array(problemCount(hearinglist))
+		delaysratings = np.array(problemCount(delayslist))
+		understandingsratings = np.array(problemCount(understandingslist))
+		cuttingsratings = np.array(problemCount(cuttingslist))
+		whiteboardratings = np.array(problemCount(whiteboardlist))
+
+		fig = plt.figure()
+
+		plt.subplot(321)
+		ind = np.array([0.5,1.5,2.5,3.5])
+		width = 0.65
+		plt.bar(ind,overallratings, width,color='green')
+		plt.axis([0,4.5,0,0.7])
+		plt.xticks(ind+width/2.,('Excellent','Good','Fair','Poor'))
+		plt.title('Survey Q1: Overall Experience')
+		plt.ylabel('Proportion of Respondents')
+		prob = badprobcalc(overallratings)
+		plt.text(3.5,0.6,r'p$_{bad}$ = '+str(round(prob,3)))
+
+		plt.subplot(322)
+		plt.bar(ind,hearingratings,width,color = 'blue')
+		plt.axis([0,4.5,0,0.7])
+		plt.xticks(ind+width/2.,('No Problems','Minor Problems','Major Problems','Session Stopped'))
+		plt.title('Survey Q2: Hearing Your Partner')
+		plt.ylabel('Proportion of Respondents')
+		prob = badprobcalc(hearingratings)
+		plt.text(3.5,0.6,r'p$_{bad}$ = '+str(round(prob,3)))
+
+
+		plt.subplot(323)
+		plt.bar(ind,delaysratings,width)
+		plt.axis([0,4.5,0,0.7])
+		plt.xticks(ind+width/2.,('No Problems','Minor Problems','Major Problems','Session Stopped'))
+		plt.title('Survey Q3: Delays in Audio')
+		plt.ylabel('Proportion of Respondents')
+		prob = badprobcalc(delaysratings)
+		plt.text(3.5,0.6,r'p$_{bad}$ = '+str(round(prob,3)))
+
+		plt.subplot(324)
+		plt.bar(ind,understandingsratings,width)
+		plt.axis([0,4.5,0,0.7])
+		plt.xticks(ind+width/2.,('No Problems','Minor Problems','Major Problems','Session Stopped'))
+		plt.title('Survey Q4: Understanding Your Partner')
+		plt.ylabel('Proportion of Respondents')
+		prob = badprobcalc(understandingsratings)
+		plt.text(3.5,0.6,r'p$_{bad}$ = '+str(round(prob,3)))
+
+		plt.subplot(325)
+		plt.bar(ind,cuttingsratings,width)
+		plt.axis([0,4.5,0,0.7])
+		plt.xticks(ind+width/2.,('No Problems','Minor Problems','Major Problems','Session Stopped'))
+		plt.title('Survey Q5: Sound Cutting In and Out')
+		plt.ylabel('Proportion of Respondents')
+		prob = badprobcalc(cuttingsratings)
+		plt.text(3.5,0.6,r'p$_{bad}$ = '+str(round(prob,3)))
+
+		plt.subplot(326)
+		plt.bar(ind,whiteboardratings,width,color = 'orange')
+		plt.axis([0,4.5,0,0.7])
+		plt.xticks(ind+width/2.,('No Problems','Minor Problems','Major Problems','Session Stopped'))
+		plt.title('Survey Q6: Whiteboard Functionality')
+		plt.ylabel('Proportion of Respondents')
+		prob = badprobcalc(whiteboardratings)
+		plt.text(3.5,0.6,r'p$_{bad}$ = '+str(round(prob,3)))
+
+		if flag == False:
+			plt.suptitle('Adobe Connect - Aggregate Survey Results - '+self.location+'  N = '+str(length), fontsize = 20)
+		elif flag == True:
+			plt.suptitle('Adobe Connect - Comparison Survey Results - '+self.location+'  N = '+str(length), fontsize = 20)
+
+		fig.set_size_inches(18.5,10.5)
+
+		if flag == False:
+			fig.savefig('AC_Aggregate_Surveys_'+self.location)
+		elif flag == True:
+			fig.savefig('AC_Aggregate_Comp_'+self.location)
+		fig.clf()
+
+		plt.close()
+
+		return overallratings,hearingratings,delaysratings,understandingsratings,cuttingsratings,whiteboardratings
+
 
 class SessionSurveyData():
 
