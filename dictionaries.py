@@ -92,8 +92,14 @@ schoollist = ['Cabrillo','Castlemont','Columbia','IBL','Horn','Irving','Morrill'
 #  Overall ratings for technology and conversion to numerical scale.
 overallratings = {'Excellent':4,'Good':3,'Fair':2,'Poor':1}
 
+#  Overall ratings list.
+overallratingslist = ['Excellent','Good','Fair','Poor']
+
 #  Ratings for each problem and conversion to numerical scale.
 propertyratings = {'none':4,'small':3,'large':2,'worst':1}
+
+#  Proeperty ratings lsit.
+propertyratingslist = ['none','small','large','worst']
 
 #  List of operating systems.
 oslist = ['Windows','OS X','Chromebook']
