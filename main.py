@@ -42,8 +42,8 @@ slhsblackboxpinglist = blackboximport(slhsblackboxpingfiles)
 slhsblackboxsessionlist = blackboxanalyze(slhsblackboxpinglist)
 
 #  import the surveys
-classsurveylist = surveycontroller('surveys.txt')
-acsurveylist = acsurveycontroller('ACPilotsurveys.txt')
+classsurveylist,accomplist = surveycontroller('surveys.txt')
+acsurveylist = acsurveycontroller('ACPilotsurveys.txt',accomplist)
 
 #  Feed the survey and class ping data to the session analysis module.
 sessionanalysis(classsurveylist,pinglist,testblackboxsessionlist)
