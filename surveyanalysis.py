@@ -582,10 +582,6 @@ def questioncorrelations(data):
 
 	i = 0
 	total = len(overall)
-	extot = 0
-	goodtot = 0
-	fairtot = 0
-	poortot = 0
 
 	for overallitem in overall:
 
@@ -597,16 +593,12 @@ def questioncorrelations(data):
 
 		if overallitem == 'Excellent':
 			index = 0
-			extot += 1
 		elif overallitem == 'Good':
 			index = 1
-			goodtot += 1
 		elif overallitem == 'Fair':
 			index = 2
-			fairtot +=1
 		elif overallitem == 'Poor':
 			index = 3
-			poortot +=1
 
 		if hearingitem == 'none':
 			indexh = 0
@@ -661,10 +653,30 @@ def questioncorrelations(data):
 		i += 1
 
 	overallvhearing[0,:] = overallvhearing[0,:]/np.sum(overallvhearing[0,:])
+	overallvhearing[1,:] = overallvhearing[1,:]/np.sum(overallvhearing[1,:])
+	overallvhearing[2,:] = overallvhearing[2,:]/np.sum(overallvhearing[2,:])
+	overallvhearing[3,:] = overallvhearing[3,:]/np.sum(overallvhearing[3,:])
+
 	overallvdelay[0,:] = overallvdelay[0,:]/np.sum(overallvdelay[0,:])
+	overallvdelay[1,:] = overallvdelay[1,:]/np.sum(overallvdelay[1,:])
+	overallvdelay[2,:] = overallvdelay[2,:]/np.sum(overallvdelay[2,:])
+	overallvdelay[3,:] = overallvdelay[3,:]/np.sum(overallvdelay[3,:])
+
 	overallvunderstanding[0,:] = overallvunderstanding[0,:]/np.sum(overallvunderstanding[0,:])
+	overallvunderstanding[1,:] = overallvunderstanding[1,:]/np.sum(overallvunderstanding[1,:])
+	overallvunderstanding[2,:] = overallvunderstanding[2,:]/np.sum(overallvunderstanding[2,:])
+	overallvunderstanding[3,:] = overallvunderstanding[3,:]/np.sum(overallvunderstanding[3,:])
+
 	overallvcutting[0,:] = overallvcutting[0,:]/np.sum(overallvcutting[0,:])
+	overallvcutting[1,:] = overallvcutting[1,:]/np.sum(overallvcutting[1,:])
+	overallvcutting[2,:] = overallvcutting[2,:]/np.sum(overallvcutting[2,:])
+	overallvcutting[3,:] = overallvcutting[3,:]/np.sum(overallvcutting[3,:])
+
 	overallvwhiteboard[0,:] = overallvwhiteboard[0,:]/np.sum(overallvwhiteboard[0,:])
+	overallvwhiteboard[1,:] = overallvwhiteboard[1,:]/np.sum(overallvwhiteboard[1,:])
+	overallvwhiteboard[2,:] = overallvwhiteboard[2,:]/np.sum(overallvwhiteboard[2,:])
+	overallvwhiteboard[3,:] = overallvwhiteboard[3,:]/np.sum(overallvwhiteboard[3,:])
+
 
 	print 'Overall v. Hearing Partner = \n',overallvhearing
 	print 'Overall v. Delays = \n',overallvdelay
