@@ -13,7 +13,7 @@ import matplotlib as mpl
 import csv
 
 from surveydata import *
-from dictionaries import classlist, classtoschool, schoollist
+from dictionaries import classlist, classtoschool, schoollist, overallratingslist, propertyratingslist
 from acdictionaries import acclasslist
 
 ######  Sort through surveys to find those at the desired location.  ######
@@ -564,6 +564,116 @@ def surveyimport(file):
 
 	return dates, rooms, usernames, usertypes, locations, videos, browsers, operatingsystems, versions, overalls, hearing, delays, understandings, cuttings, videoprobs, whiteboardprobs
 
+def questioncorrelations(data):
+
+	#  Create numpy arrays for each correlation.
+	overallvhearing = np.zeros((4,4))
+	overallvdelay = np.zeros((4,4))
+	overallvunderstanding = np.zeros((4,4))
+	overallvcutting = np.zeros((4,4))
+	overallvwhiteboard = np.zeros((4,4))
+
+	overall = data.overalls
+	hearing = data.hearing
+	delay = data.delays
+	understanding = data.understandings
+	cutting = data.cuttings
+	whiteboard = data.whiteboardprobs
+
+	i = 0
+	total = len(overall)
+	extot = 0
+	goodtot = 0
+	fairtot = 0
+	poortot = 0
+
+	for overallitem in overall:
+
+		hearingitem = hearing[i]
+		delayitem = delay[i]
+		understandingitem = understanding[i]
+		cuttingitem = cutting[i]
+		whiteboarditem = whiteboard[i]
+
+		if overallitem == 'Excellent':
+			index = 0
+			extot += 1
+		elif overallitem == 'Good':
+			index = 1
+			goodtot += 1
+		elif overallitem == 'Fair':
+			index = 2
+			fairtot +=1
+		elif overallitem == 'Poor':
+			index = 3
+			poortot +=1
+
+		if hearingitem == 'none':
+			indexh = 0
+		elif hearingitem == 'small':
+			indexh = 1
+		elif hearingitem == 'large':
+			indexh = 2
+		elif hearingitem == 'worst':
+			indexh = 3
+
+		if delayitem == 'none':
+			indexd = 0
+		elif delayitem == 'small':
+			indexd = 1
+		elif delayitem == 'large':
+			indexd = 2
+		elif delayitem == 'worst':
+			indexd = 3
+
+		if understandingitem == 'none':
+			indexu = 0
+		elif understandingitem == 'small':
+			indexu = 1
+		elif understandingitem == 'large':
+			indexu = 2
+		elif understandingitem == 'worst':
+			indexu = 3
+
+		if cuttingitem == 'none':
+			indexc = 0
+		elif cuttingitem == 'small':
+			indexc = 1
+		elif cuttingitem == 'large':
+			indexc = 2
+		elif cuttingitem == 'worst':
+			indexc = 3
+
+		if whiteboarditem == 'none':
+			indexw = 0
+		elif whiteboarditem == 'small':
+			indexw = 1
+		elif whiteboarditem == 'large':
+			indexw = 2
+		elif whiteboarditem == 'worst':
+			indexw = 3
+
+		overallvhearing[index,indexh] += 1
+		overallvdelay[index,indexd] += 1
+		overallvunderstanding[index,indexu] += 1
+		overallvcutting[index,indexc] += 1
+		overallvwhiteboard[index,indexw] += 1
+		i += 1
+
+	overallvhearing[0,:] = overallvhearing[0,:]/np.sum(overallvhearing[0,:])
+	overallvdelay[0,:] = overallvdelay[0,:]/np.sum(overallvdelay[0,:])
+	overallvunderstanding[0,:] = overallvunderstanding[0,:]/np.sum(overallvunderstanding[0,:])
+	overallvcutting[0,:] = overallvcutting[0,:]/np.sum(overallvcutting[0,:])
+	overallvwhiteboard[0,:] = overallvwhiteboard[0,:]/np.sum(overallvwhiteboard[0,:])
+
+	print 'Overall v. Hearing Partner = \n',overallvhearing
+	print 'Overall v. Delays = \n',overallvdelay
+	print 'Overall v. Understanding Partner = \n',overallvunderstanding
+	print 'Overall v. Sound Cutting Out = \n',overallvcutting
+	print 'Overall v. Whiteboard Functionality = \n',overallvwhiteboard
+
+	return
+
 ######  Feed survey data to various analysis functions, then return class data list for session analysis.  ######
 def surveycontroller(filename):
 
@@ -576,6 +686,7 @@ def surveycontroller(filename):
 	fullData.surveyOverTime()
 	fullData.countRespondents()
 	fullData.aggregateSurvey()
+	questioncorrelations(fullData)
 
 	#  Sort the surveys by class - creating one object for each class and adding to a list.
 	classDataList = list()
@@ -625,6 +736,7 @@ def surveycontroller(filename):
 
 	return classDataList, acCompList
 
+
 def acsurveycontroller(filename,accomplist):
 
 	dates, rooms, usernames, usertypes, locations, videos, browsers, operatingsystems, versions, overalls, hearing, delays, understandings, cuttings, videoprobs, whiteboardprobs = surveyimport(filename)
@@ -635,6 +747,9 @@ def acsurveycontroller(filename,accomplist):
 
 	#  Sort the AC surveys by class
 	ACclassDataList = list()
+
+	#  AC survey question correlations.
+	questioncorrelations(fullACData)
 
 	#  Creat plots for each AC class.
 	for entry in acclasslist:
@@ -653,4 +768,7 @@ def acsurveycontroller(filename,accomplist):
 		diffcuttings = accuttings - compcuttings
 		diffwhiteboards = acwhiteboards - compwhiteboards
 		
+	#  Add diff graphing/calculations here.
+
+	#  Add averaging over class here.
 	return
